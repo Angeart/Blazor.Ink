@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Launch Blazor.Ink.Sample",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Blazor.Ink.Sample/bin/Debug/net9.0/Blazor.Ink.Sample.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Blazor.Ink.Sample",
+            "stopAtEntry": false,
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }
+    ]
+}
