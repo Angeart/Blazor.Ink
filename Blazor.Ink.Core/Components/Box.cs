@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Blazor.Ink.Core.Value;
 
 namespace Blazor.Ink.Core.Components;
 
@@ -8,7 +9,104 @@ namespace Blazor.Ink.Core.Components;
 public class Box : ComponentBase, IInkComponent
 {
     [Parameter]
+    public Position Position { get; set; } = Position.Relative;
+    [Parameter]
+    public int RowGap { get; set; } = 0;
+    [Parameter]
+    public int Gap { get; set; } = 0;
+    [Parameter]
     public int Padding { get; set; } = 0;
     [Parameter]
+    public int PaddingX { get; set; } = 0;
+    [Parameter]
+    public int PaddingY { get; set; } = 0;
+    [Parameter]
+    public int PaddingTop { get; set; } = 0;
+    [Parameter]
+    public int PaddingBottom { get; set; } = 0;
+    [Parameter]
+    public int PaddingLeft { get; set; } = 0;
+    [Parameter]
+    public int PaddingRight { get; set; } = 0;
+
+    [Parameter]
     public int Margin { get; set; } = 0;
+    [Parameter]
+    public int MarginX { get; set; } = 0;
+    [Parameter]
+    public int MarginY { get; set; } = 0;
+    [Parameter]
+    public int MarginTop { get; set; } = 0;
+    [Parameter]
+    public int MarginBottom { get; set; } = 0;
+    [Parameter]
+    public int MarginLeft { get; set; } = 0;
+    [Parameter]
+    public int MarginRight { get; set; } = 0;
+
+    [Parameter]
+    public int FlexGrow { get; set; } = 0;
+    [Parameter]
+    public int FlexShrink { get; set; } = 1;
+    [Parameter]
+    public int FlexBasis { get; set; } = 0;
+    [Parameter]
+    public FlexDirection FlexDirection { get; set; } = FlexDirection.Row;
+    [Parameter]
+    public FlexWrap FlexWrap { get; set; } = FlexWrap.NoWrap;
+    [Parameter]
+    public AlignItems AlignItems { get; set; } = AlignItems.Stretch;
+    [Parameter]
+    public AlignSelf AlignSelf { get; set; } = AlignSelf.Auto;
+    [Parameter]
+    public JustifyContent JustifyContent { get; set; } = JustifyContent.FlexStart;
+
+    [Parameter]
+    public int Width { get; set; } = 0;
+    [Parameter]
+    public int Height { get; set; } = 0;
+    [Parameter]
+    public int MinWidth { get; set; } = 0;
+    [Parameter]
+    public int MinHeight { get; set; } = 0;
+
+    [Parameter]
+    public Display Display { get; set; } = Display.Flex;
+    [Parameter]
+    public Overflow Overflow { get; set; } = Overflow.Visible;
+
+    [Parameter]
+    public string BorderStyle { get; set; } = "";
+    [Parameter]
+    public bool BorderTop { get; set; } = false;
+    [Parameter]
+    public bool BorderBottom { get; set; } = false;
+    [Parameter]
+    public bool BorderLeft { get; set; } = false;
+    [Parameter]
+    public bool BorderRight { get; set; } = false;
+    [Parameter]
+    public InkColor BorderColor { get; set; } = InkColor.Default;
+    [Parameter]
+    public InkColor BorderTopColor { get; set; } = InkColor.Default;
+    [Parameter]
+    public InkColor BorderBottomColor { get; set; } = InkColor.Default;
+    [Parameter]
+    public InkColor BorderLeftColor { get; set; } = InkColor.Default;
+    [Parameter]
+    public InkColor BorderRightColor { get; set; } = InkColor.Default;
+
+    [Parameter]
+    public bool BorderDimColor { get; set; } = false;
+    [Parameter]
+    public bool BorderTopDimColor { get; set; } = false;
+    [Parameter]
+    public bool BorderBottomDimColor { get; set; } = false;
+    [Parameter]
+    public bool BorderLeftDimColor { get; set; } = false;
+    [Parameter]
+    public bool BorderRightDimColor { get; set; } = false;
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 }
