@@ -8,6 +8,17 @@ namespace Blazor.Ink.Core.Layouts;
 
 public class BoxNode : NodeBase<Box>
 {
+    private struct FixedBoxBorder : IBorder
+    {
+        public static FixedBoxBorder Default => new();
+        public int? Border => 1;
+        public int? BorderX => null;
+        public int? BorderY => null;
+        public int? BorderTop => null;
+        public int? BorderBottom => null;
+        public int? BorderLeft => null;
+        public int? BorderRight => null;
+    }
     protected override void ApplyLayoutImpl()
     {
         // --- YogaSharpノードへのレイアウト情報反映 ---
@@ -15,16 +26,11 @@ public class BoxNode : NodeBase<Box>
         unsafe
         {
             Component?.ApplyPaddingTo(Node);
-            // マージン
-            Node->SetMargin(YGEdge.All, Component!.Margin);
-            Node->SetMargin(YGEdge.Top, Component.MarginTop);
-            Node->SetMargin(YGEdge.Bottom, Component.MarginBottom);
-            Node->SetMargin(YGEdge.Left, Component.MarginLeft);
-            Node->SetMargin(YGEdge.Right, Component.MarginRight);
-            Node->SetMargin(YGEdge.Horizontal, Component.MarginX);
-            Node->SetMargin(YGEdge.Vertical, Component.MarginY);
+            Component?.ApplyMarginTo(Node);
+            FixedBoxBorder.Default.ApplyBorderTo(Node);
+            
             // Gap
-            Node->SetGap(YGGutter.All, Component.Gap);
+            Node->SetGap(YGGutter.All, Component!.Gap);
             Node->SetGap(YGGutter.Row, Component.RowGap);
             // サイズ
             if (Component.Width is not null)

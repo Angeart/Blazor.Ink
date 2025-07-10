@@ -5,7 +5,6 @@ namespace Blazor.Ink.Core.Layouts;
 
 public class RootNode : NodeBase
 {
-
     public override Size Render(IRenderable renderable)
     {
         return new Size(0, 0);
@@ -23,6 +22,6 @@ public class RootNode : NodeBase
     public override RenderTree BuildRenderTree()
     {
         var childrenRenderTree = Children.Select(it => it.BuildRenderTree()).ToList();
-        return new RenderTree(() => { }, childrenRenderTree);
+        return new RenderTree(() => new Size(0, 0), childrenRenderTree);
     }
 }

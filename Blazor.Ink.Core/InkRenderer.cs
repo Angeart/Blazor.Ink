@@ -30,7 +30,7 @@ public partial class InkRenderer : Renderer
       rootCtx.Node.CalculateLayout();
       var renderTree = rootCtx.Node.BuildRenderTree();
       var size = renderTree.Render();
-      AnsiConsole.Cursor.MoveDown(size.Height + 2);
+      AnsiConsole.Cursor.MoveDown(size.Height);
     }
     return Task.CompletedTask;
   }
