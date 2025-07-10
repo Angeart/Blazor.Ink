@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
 using Blazor.Ink.Core.Components;
+using Blazor.Ink.Core.Layouts;
 using Spectre.Console.Rendering;
 
 namespace Blazor.Ink.Core;
@@ -22,10 +23,14 @@ public partial class InkRenderer : Renderer
   {
     _logger.LogDebug("ReferenceFrames.Count: {Count}", renderBatch.ReferenceFrames.Count);
     // ひとまずRootをレンダーする
-    var root = BuildSpectreRenderable(0);
-    if (root.Renderable is not null)
+    var ctx = new RenderContext(0, new RootNode());
+    var rootCtx = BuildSpectreRenderable(0, ref ctx);
+    if (rootCtx.Node is not null)
     {
-        AnsiConsole.Write(root.Renderable);
+      rootCtx.Node.CalculateLayout();
+      var renderTree = rootCtx.Node.BuildRenderTree();
+      var size = renderTree.Render();
+      AnsiConsole.Cursor.MoveDown(size.Height + 2);
     }
     return Task.CompletedTask;
   }

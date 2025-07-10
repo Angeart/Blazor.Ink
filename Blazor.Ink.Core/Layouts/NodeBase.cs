@@ -1,33 +1,111 @@
 using Blazor.Ink.Core.Components;
+using Microsoft.AspNetCore.Components;
+using Spectre.Console;
 using Spectre.Console.Rendering;
 using YogaSharp;
 
 namespace Blazor.Ink.Core.Layouts;
 
-public interface ILayoutNode {}
-public abstract unsafe class NodeBase : IDisposable, ILayoutNode
+public readonly record struct Size(int Width, int Height)
 {
-    protected readonly record struct Size(int Width, int Height);
+    public static Size Max(in Size a, in Size b)
+    {
+        return new Size(Math.Max(a.Width, b.Width), Math.Max(a.Height, b.Height));
+    }
+};
 
-    protected readonly record struct Margin(int Top, int Right, int Bottom, int Left);
+public readonly record struct Margin(int Top, int Right, int Bottom, int Left);
 
-    protected readonly record struct Padding(int Top, int Right, int Bottom, int Left);
+public readonly record struct Padding(int Top, int Right, int Bottom, int Left);
 
+public interface IInkNode
+{
+    void CalculateLayout();
+    Size Render(IRenderable renderable);
+    void AppendChild(IInkNode? child);
+    IInkNode ApplyComponent(IComponent component);
+    IInkNode ApplyText(string text);
+    RenderTree BuildRenderTree();
+}
 
+public abstract unsafe class NodeBase : IDisposable, IInkNode
+{
     public readonly YGNode* Node = YGNode.New();
     public readonly YGConfig* Config = YGConfig.GetDefault();
-    protected NodeBase? Child { get; set; }
+    protected List<NodeBase> Children { get; } = new();
 
     public void Dispose()
     {
         Node->Dispose();
     }
 
+    public void CalculateLayout()
+    {
+        ApplyLayout();
+        UpdateNodeTree();
+        Node->CalculateLayout();
+    }
+
+    private void UpdateNodeTree()
+    {
+        for (var i = 0; i < Children.Count; i++)
+        {
+            var child = Children[i];
+            child.UpdateNodeTree();
+            Node->InsertChild(child.Node, i);
+        }
+    }
+
+    public abstract Size Render(IRenderable renderable);
+
+    public void AppendChild(IInkNode? child)
+    {
+        if (child is not NodeBase node)
+        {
+            return;
+        }
+
+        Children.Add(node);
+    }
+
+    protected abstract void ApplyLayoutImpl();
+
+    protected void ApplyLayout()
+    {
+        ApplyLayoutImpl();
+        foreach (var child in Children)
+        {
+            child.ApplyLayout();
+        }
+    }
+
+    public abstract IInkNode ApplyComponent(IComponent component);
+    // public abstract void ApplyLayout();
+
+    public virtual IInkNode ApplyText(string text)
+    {
+        return this;
+    }
+
+    /// <summary>
+    /// Builds the render tree for the specified child element.
+    /// </summary>
+    /// <remarks>
+    /// Should be called CalculateLayout() before this method to ensure the layout is calculated.
+    /// </remarks>
+    public abstract RenderTree BuildRenderTree();
+}
+
+public abstract unsafe class NodeBase<TInkComponent> : NodeBase, IDisposable, IInkNode
+    where TInkComponent : class, IInkComponent
+{
+    protected TInkComponent? Component { get; private set; } = null!;
+
     protected Size GetSize()
     {
         return new Size(
-            (int)Node->GetWidth().Value,
-            (int)Node->GetHeight().Value);
+            (int)Node->GetComputedWidth(),
+            (int)Node->GetComputedHeight());
     }
 
     protected Margin GetMargin()
@@ -48,7 +126,30 @@ public abstract unsafe class NodeBase : IDisposable, ILayoutNode
             (int)Node->GetComputedPadding(YGEdge.Left));
     }
 
-    public abstract void ApplyComponent(IInkComponent component);
+    public override IInkNode ApplyComponent(IComponent component)
+    {
+        Component = component as TInkComponent;
+        if (Component is null)
+        {
+            AnsiConsole.WriteException(new NullReferenceException($"Component is null, actual parameter:{component}"));
+            return this;
+        }
 
-    protected abstract IRenderable BuildRenderTree(IRenderable child);
+        return this;
+    }
+
+    public override Size Render(IRenderable renderable)
+    {
+        var left = (int)Node->GetComputedLeft();
+        var top = (int)Node->GetComputedTop();
+        var width = (int)Node->GetComputedWidth();
+        var height = (int)Node->GetComputedHeight();
+        AnsiConsole.Cursor.MoveRight(left);
+        AnsiConsole.Cursor.MoveDown(top);
+        // AnsiConsole.Cursor.SetPosition(left, top);
+        AnsiConsole.Write(renderable);
+        AnsiConsole.Cursor.MoveLeft(left + width);
+        AnsiConsole.Cursor.MoveUp(top + height);
+        return new Size(width, height);
+    }
 }
