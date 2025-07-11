@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink", "Blazor.Ink\Blazor.Ink.csproj", "{3E62D2DB-2460-48A5-B8F0-CC7A9EFD8E81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Core.Test", "Blazor.Ink.Core.Test\Blazor.Ink.Core.Test.csproj", "{68EE2B61-A36D-4EA8-8D3A-A6D2B933DBF4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Test", "Blazor.Ink.Test\Blazor.Ink.Test.csproj", "{68EE2B61-A36D-4EA8-8D3A-A6D2B933DBF4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Sample", "Blazor.Ink.Sample\Blazor.Ink.Sample.csproj", "{7E68C393-AF89-481E-B788-64EDD427999F}"
 EndProject
