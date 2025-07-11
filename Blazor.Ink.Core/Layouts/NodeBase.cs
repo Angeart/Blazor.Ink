@@ -18,7 +18,7 @@ public readonly record struct Margin(int Top, int Right, int Bottom, int Left);
 
 public readonly record struct Padding(int Top, int Right, int Bottom, int Left);
 
-public interface IInkNode
+public interface IInkNode : IDisposable
 {
     void CalculateLayout();
     Size Render(IRenderable renderable);
@@ -28,7 +28,7 @@ public interface IInkNode
     RenderTree BuildRenderTree();
 }
 
-public abstract unsafe class NodeBase : IDisposable, IInkNode
+public abstract unsafe class NodeBase : IInkNode
 {
     public readonly YGNode* Node = YGNode.New();
     public readonly YGConfig* Config = YGConfig.GetDefault();
@@ -36,6 +36,11 @@ public abstract unsafe class NodeBase : IDisposable, IInkNode
 
     public void Dispose()
     {
+        for (var i = 0; i < Children.Count; i++)
+        {
+            Children[i].Dispose();
+        }
+
         Node->Dispose();
     }
 
