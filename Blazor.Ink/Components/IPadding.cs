@@ -1,6 +1,6 @@
 using YogaSharp;
 
-namespace Blazor.Ink.Core.Components;
+namespace Blazor.Ink.Components;
 
 public interface IPadding
 {

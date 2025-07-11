@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Blazor.Ink.Core\Blazor.Ink.Core.csproj" />
+    <ProjectReference Include="..\Blazor.Ink\Blazor.Ink.csproj" />
   </ItemGroup>
 
 </Project>

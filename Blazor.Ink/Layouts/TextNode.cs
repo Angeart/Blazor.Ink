@@ -1,10 +1,11 @@
 using Spectre.Console;
 using YogaSharp;
-using Text = Blazor.Ink.Core.Components.Text;
+using Components_Text = Blazor.Ink.Components.Text;
+using Text = Blazor.Ink.Components.Text;
 
-namespace Blazor.Ink.Core.Layouts;
+namespace Blazor.Ink.Layouts;
 
-public class TextNode : NodeBase<Text>
+public class TextNode : NodeBase<Components_Text>
 {
     private string Text { get; set; } = string.Empty;
     private int Width { get; set; }

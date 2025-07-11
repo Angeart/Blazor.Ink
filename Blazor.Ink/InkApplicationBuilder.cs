@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Blazor.Ink.Core;
+namespace Blazor.Ink;
 
 public class InkApplicationBuilder
 {

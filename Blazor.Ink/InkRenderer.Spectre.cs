@@ -1,12 +1,11 @@
-using Blazor.Ink.Core.Components;
-using Blazor.Ink.Core.Layouts;
+using Blazor.Ink.Components;
+using Blazor.Ink.Layouts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.RenderTree;
-using Spectre.Console;
 using Spectre.Console.Rendering;
-using Text = Blazor.Ink.Core.Components.Text;
+using Text = Blazor.Ink.Components.Text;
 
-namespace Blazor.Ink.Core;
+namespace Blazor.Ink;
 
 public partial class InkRenderer
 {
@@ -58,7 +57,7 @@ public partial class InkRenderer
         IInkNode? node = frame.Component switch
         {
             Box => new BoxNode(),
-            Text => new TextNode(),
+            Spectre.Console.Text => new TextNode(),
             _ => null
         };
 

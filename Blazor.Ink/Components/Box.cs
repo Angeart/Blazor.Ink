@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Components;
-using Blazor.Ink.Core.Value;
+using Blazor.Ink.Value;
 using Microsoft.AspNetCore.Components.Rendering;
 using Spectre.Console;
-using Overflow = Blazor.Ink.Core.Value.Overflow;
+using Overflow = Blazor.Ink.Value.Overflow;
+using Value_Overflow = Blazor.Ink.Value.Overflow;
 
-namespace Blazor.Ink.Core.Components;
+namespace Blazor.Ink.Components;
 
 /// <summary>
 /// Equivalent to Ink's Box. TUI element with border, padding, margin, etc.
@@ -45,7 +46,7 @@ public partial class Box : ComponentBase, IInkComponent, IPadding, IMargin
     [Parameter] public int? MinHeight { get; set; }
 
     [Parameter] public Display Display { get; set; } = Display.Flex;
-    [Parameter] public Overflow Overflow { get; set; } = Overflow.Visible;
+    [Parameter] public Value_Overflow Overflow { get; set; } = Value_Overflow.Visible;
 
 
     [Parameter] public int FlexGrow { get; set; } = 0;

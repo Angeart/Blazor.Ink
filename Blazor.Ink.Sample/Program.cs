@@ -1,4 +1,4 @@
-﻿using Blazor.Ink.Core;
+﻿using Blazor.Ink;
 using Blazor.Ink.Sample;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;

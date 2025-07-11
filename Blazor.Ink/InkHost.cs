@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Blazor.Ink.Core;
+namespace Blazor.Ink;
 
 public class InkHost : IHost
 {

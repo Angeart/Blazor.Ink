@@ -1,4 +1,4 @@
-namespace Blazor.Ink.Core.Value;
+namespace Blazor.Ink.Value;
 
 /// <summary>
 /// Text wrapping method

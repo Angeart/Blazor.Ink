@@ -1,10 +1,10 @@
-using Blazor.Ink.Core.Components;
-using Blazor.Ink.Core.Value;
+using Blazor.Ink.Components;
+using Blazor.Ink.Value;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 using YogaSharp;
 
-namespace Blazor.Ink.Core.Layouts;
+namespace Blazor.Ink.Layouts;
 
 public class BoxNode : NodeBase<Box>
 {

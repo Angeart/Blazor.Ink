@@ -1,7 +1,7 @@
 // AlignItems.cs
 // Enum definition based on Ink's styles.ts for vertical alignment of items.
 
-namespace Blazor.Ink.Core.Value;
+namespace Blazor.Ink.Value;
 
 /// <summary>
 /// Vertical alignment of items

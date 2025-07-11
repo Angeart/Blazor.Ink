@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Blazor.Ink.Core;
+namespace Blazor.Ink;
 
 /// <summary>
 /// Custom Dispatcher for Ink (compatible with Blazor's official Dispatcher).

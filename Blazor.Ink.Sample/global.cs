@@ -1,1 +1,1 @@
-global using Blazor.Ink.Core.Components;
+global using Blazor.Ink.Components;

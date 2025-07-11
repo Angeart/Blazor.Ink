@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
-using Blazor.Ink.Core.Components;
-using Blazor.Ink.Core.Layouts;
+using Blazor.Ink.Components;
+using Blazor.Ink.Layouts;
 using Spectre.Console.Rendering;
 
-namespace Blazor.Ink.Core;
+namespace Blazor.Ink;
 
 /// <summary>
 /// Template for a custom Renderer that converts Blazor's render tree to a TUI.

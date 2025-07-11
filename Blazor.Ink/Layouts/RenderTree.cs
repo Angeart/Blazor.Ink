@@ -1,4 +1,4 @@
-namespace Blazor.Ink.Core.Layouts;
+namespace Blazor.Ink.Layouts;
 
 public class RenderTree
 {

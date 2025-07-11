@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 
-namespace Blazor.Ink.Core.Components;
+namespace Blazor.Ink.Components;
 
 public partial class Text : ComponentBase, IInkComponent
 {

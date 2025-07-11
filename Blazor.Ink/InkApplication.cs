@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.RenderTree;
 using System.Threading;
 
-namespace Blazor.Ink.Core;
+namespace Blazor.Ink;
 
 public class InkApplication
 {

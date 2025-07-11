@@ -1,7 +1,7 @@
 // FlexWrap.cs
 // Enum definition based on Ink's styles.ts for flex wrapping.
 
-namespace Blazor.Ink.Core.Value;
+namespace Blazor.Ink.Value;
 
 /// <summary>
 /// Flex wrapping

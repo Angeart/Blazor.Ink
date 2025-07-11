@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Spectre.Console.Rendering;
 
-namespace Blazor.Ink.Core.Layouts;
+namespace Blazor.Ink.Layouts;
 
 public class RootNode : NodeBase
 {
