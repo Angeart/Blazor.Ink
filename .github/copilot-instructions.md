@@ -1,25 +1,29 @@
 <!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
 
-# サマリ
-このワークスペースは、Spectre.Consoleを用いてInk風のリッチなTUIを実現するCLIライブラリ（Blazor.Ink）を構築する.NETソリューションです。コア、CLI、テスト、サンプルプロジェクトを含みます。ターミナルへのコンポーネント描画やユーザー入力への応答を重視し、コアロジックのテストカバレッジを優先します。
+# Summary
+This workspace is a .NET solution for building a CLI library (Blazor.Ink) that realizes Ink-style rich TUI using Spectre.Console. It includes core, CLI, test, and sample projects. Emphasis is placed on component rendering to the terminal and responding to user input, with a priority on test coverage for core logic.
 
 # Blazor.Ink Workspace Custom Instructions
 
-## サマリ
-Blazor.Inkは、BlazorのレンダーツリーをSpectre.ConsoleベースのTUIに変換するCLIライブラリです。コア（Blazor.Ink.Core）はBlazorコンポーネントをTUIノードツリーへ変換し、YogaSharpでレイアウト計算後、Spectre.Consoleで描画します。
+## Summary
+Blazor.Ink is a CLI library that converts Blazor's render tree into a TUI based on Spectre.Console. The core (Blazor.Ink.Core) transforms Blazor components into a TUI node tree, performs layout calculation with YogaSharp, and renders using Spectre.Console.
 
-## 設計方針
-- RazorファイルはBlazor標準のビルドでC#コンポーネント化し、InkRendererがレンダーツリー→TUIノード（IInkNode）→Spectre.Console描画を担う。
-- 各コンポーネント（例: Box, Text）は対応するNode（BoxNode, TextNode）に変換され、YogaSharpでレイアウト。
-- レンダーツリー→TUI変換・レイアウト・描画ロジックは小さな単位で分離し、テスト容易性を重視。
-- CLIやサンプルはコアロジックを利用してTUIを表示。
-- ユーザー入力によるTUIの動的変化も重視。
+## Design Principles
+- Razor files are compiled into C# components using standard Blazor build, and InkRenderer is responsible for converting the render tree into TUI nodes (IInkNode) and rendering with Spectre.Console.
+- Each component (e.g., Box, Text) is converted to a corresponding Node (BoxNode, TextNode) and laid out using YogaSharp.
+- The logic for render tree to TUI conversion, layout, and rendering is separated into small units for testability.
+- CLI and sample apps use the core logic to display TUIs.
+- Dynamic TUI updates in response to user input are emphasized.
 
-## コーディング規約
-- すべてのC#ファイルはfile-scoped namespace形式（例: `namespace Foo.Bar;`）を原則とする。
-- コアロジックのテストカバレッジを優先する。
-- unsafeコードの利用は必要最小限とし、明示的に意図をコメントする。
-- IDisposable実装クラスはDisposeパターンを厳守する。
-- null許容型や`null!`の利用時は意図を明確にし、初期化漏れに注意する。
-- partial classの利用は分割実装の意図が明確な場合に限定する。
-- XMLドキュメントコメント（///）を積極的に記述し、公開APIの意図・使い方を明示する。
+## Coding Guidelines
+- All C# files should use file-scoped namespace format (e.g., `namespace Foo.Bar;`).
+- Prioritize test coverage for core logic.
+- Use unsafe code only when necessary, and always comment the intent explicitly.
+- Classes implementing IDisposable must strictly follow the Dispose pattern.
+- When using nullable types or `null!`, clarify the intent and avoid uninitialized values.
+- Use partial classes only when the intent for split implementation is clear.
+- Actively write XML documentation comments (///) to clarify the intent and usage of public APIs.
+- All comments and documentation written to the codebase must be in English.
+
+## Chat Guidelines
+- When responding to user queries, always respect the user's input language.
