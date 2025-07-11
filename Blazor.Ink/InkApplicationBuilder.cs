@@ -29,4 +29,11 @@ public class InkApplicationBuilder
         Services.AddSingleton<InkHost>();
         return this;
     }
+    
+    public InkApplicationBuilder ConfigureServices(
+        Action<IServiceCollection> configure)
+    {
+        configure(Services);
+        return this;
+    }
 }
