@@ -1,17 +1,9 @@
 ﻿using Blazor.Ink;
 using Blazor.Ink.Sample;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 
-var builder = Host.CreateDefaultBuilder(args)
-    .ConfigureServices((ctx, services) => {
-        services.AddLogging();
-        services.AddSingleton<InkHost>();
-    });
+var builder = Ink.CreateBuilder(args);
+builder.UseDefaultServices();
 var app = builder.Build();
 
-var host = app.Services.GetRequiredService<InkHost>();
-host.RegisterComponents(new[] { typeof(HelloInk) });
-var task = host.RunAsync();
-host.Navigate<HelloInk>();
-await task;
+app.RegisterComponents([typeof(HelloInk)]);
+await app.RunAsync<HelloInk>();

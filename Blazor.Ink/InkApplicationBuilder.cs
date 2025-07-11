@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Spectre.Console;
 
 namespace Blazor.Ink;
 
@@ -11,11 +12,21 @@ public class InkApplicationBuilder
     {
         Args = args;
         Services = new ServiceCollection();
-        Services.AddLogging(); // Added
     }
 
     public InkApplication Build()
     {
-        return new InkApplication(Services.BuildServiceProvider(), Args);
+        return new InkApplication(
+            Services.BuildServiceProvider(),
+            Args);
+    }
+    
+    public InkApplicationBuilder UseDefaultServices()
+    {
+        Services.AddSingleton<IAnsiConsole>(
+            _ => AnsiConsole.Create(new()));
+        Services.AddLogging();
+        Services.AddSingleton<InkHost>();
+        return this;
     }
 }

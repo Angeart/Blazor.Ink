@@ -8,6 +8,8 @@ namespace Blazor.Ink.Layouts;
 
 public class BoxNode : NodeBase<Box>
 {
+    public BoxNode(IAnsiConsole ansiConsole) : base(ansiConsole) { }
+
     private struct FixedBoxBorder : IBorder
     {
         public static FixedBoxBorder Default => new();

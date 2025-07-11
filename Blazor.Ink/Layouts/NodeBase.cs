@@ -33,6 +33,12 @@ public abstract unsafe class NodeBase : IInkNode
     public readonly YGNode* Node = YGNode.New();
     public readonly YGConfig* Config = YGConfig.GetDefault();
     protected List<NodeBase> Children { get; } = new();
+    protected readonly IAnsiConsole _ansiConsole;
+
+    protected NodeBase(IAnsiConsole ansiConsole)
+    {
+        _ansiConsole = ansiConsole;
+    }
 
     public void Dispose()
     {
@@ -106,6 +112,8 @@ public abstract unsafe class NodeBase<TInkComponent> : NodeBase, IDisposable, II
 {
     protected TInkComponent? Component { get; private set; } = null!;
 
+    protected NodeBase(IAnsiConsole ansiConsole) : base(ansiConsole) { }
+
     protected Size GetSize()
     {
         return new Size(
@@ -136,10 +144,9 @@ public abstract unsafe class NodeBase<TInkComponent> : NodeBase, IDisposable, II
         Component = component as TInkComponent;
         if (Component is null)
         {
-            AnsiConsole.WriteException(new NullReferenceException($"Component is null, actual parameter:{component}"));
+            _ansiConsole.WriteException(new NullReferenceException($"Component is null, actual parameter:{component}"));
             return this;
         }
-
         return this;
     }
 
@@ -149,12 +156,12 @@ public abstract unsafe class NodeBase<TInkComponent> : NodeBase, IDisposable, II
         var top = (int)Node->GetComputedTop();
         var width = (int)Node->GetComputedWidth();
         var height = (int)Node->GetComputedHeight();
-        AnsiConsole.Cursor.MoveRight(left);
-        AnsiConsole.Cursor.MoveDown(top);
-        // AnsiConsole.Cursor.SetPosition(left, top);
-        AnsiConsole.Write(renderable);
-        AnsiConsole.Cursor.MoveLeft(left + width);
-        AnsiConsole.Cursor.MoveUp(top + height);
+        _ansiConsole.Cursor.MoveRight(left);
+        _ansiConsole.Cursor.MoveDown(top);
+        // _ansiConsole.Cursor.SetPosition(left, top);
+        _ansiConsole.Write(renderable);
+        _ansiConsole.Cursor.MoveLeft(left + width);
+        _ansiConsole.Cursor.MoveUp(top + height);
         return new Size(width, height);
     }
 }

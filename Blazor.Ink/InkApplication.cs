@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.RenderTree;
 using System.Threading;
+using Spectre.Console;
 
 namespace Blazor.Ink;
 
@@ -16,16 +17,18 @@ public class InkApplication
         Args = args;
     }
 
-    public async Task RunAsync<TComponent>() where TComponent : IComponent
+    public async Task RunAsync<TInitialPage>() where TInitialPage : IComponent
     {
         // Start the TUI event loop using InkHost
-        var host = new InkHost(_provider);
-        await host.RunAsync();
+        var host = _provider.GetRequiredService<InkHost>();
+        var task = host.RunAsync();
+        host.Navigate<TInitialPage>();
+        await task;
     }
-}
 
-public static class InkApplicationHost
-{
-    public static InkApplicationBuilder CreateBuilder(string[] args)
-        => new InkApplicationBuilder(args);
+    public void RegisterComponents(IEnumerable<Type> components)
+    {
+        var host = _provider.GetRequiredService<InkHost>();
+        host.RegisterComponents(components);
+    }
 }

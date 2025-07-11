@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Spectre.Console;
 
 namespace Blazor.Ink;
 
@@ -30,7 +31,8 @@ public class InkHost : IHost
     {
         SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
         var loggerFactory = _provider.GetRequiredService<ILoggerFactory>();
-        _renderer = new InkRenderer(_provider, loggerFactory); // Instantiate only once here.
+        var console = _provider.GetRequiredService<IAnsiConsole>();
+        _renderer = new InkRenderer(_provider, loggerFactory, console); // Instantiate only once here.
         await StartAsync(cancellationToken);
         // Main TUI event loop (waits until process ends, e.g., Ctrl+C).
         try

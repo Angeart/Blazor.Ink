@@ -14,26 +14,28 @@ namespace Blazor.Ink;
 public partial class InkRenderer : Renderer
 {
   private readonly ILogger<InkRenderer> _logger;
+  private readonly IAnsiConsole _ansiConsole;
   private int _currentCursorY = 0;
-  public InkRenderer(IServiceProvider serviceProvider, ILoggerFactory loggerFactory) : base(serviceProvider, loggerFactory)
+  public InkRenderer(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IAnsiConsole ansiConsole) : base(serviceProvider, loggerFactory)
   {
     _logger = loggerFactory.CreateLogger<InkRenderer>();
+    _ansiConsole = ansiConsole;
   }
 
   protected override Task UpdateDisplayAsync(in RenderBatch renderBatch)
   {
     _logger.LogDebug("ReferenceFrames.Count: {Count}", renderBatch.ReferenceFrames.Count);
     // Render the Root node first.
-    var ctx = new RenderContext(0, new RootNode());
+    var ctx = new RenderContext(0, new RootNode(_ansiConsole));
     var rootCtx = BuildSpectreRenderable(0, ref ctx);
     if (rootCtx.Node is not null)
     {
-      AnsiConsole.Cursor.MoveUp(_currentCursorY);
+      _ansiConsole.Cursor.MoveUp(_currentCursorY);
       rootCtx.Node.CalculateLayout();
       var renderTree = rootCtx.Node.BuildRenderTree();
       var size = renderTree.Render();
       rootCtx.Node.Dispose();
-      AnsiConsole.Cursor.MoveDown(size.Height);
+      _ansiConsole.Cursor.MoveDown(size.Height);
       _currentCursorY = size.Height;
     }
     return Task.CompletedTask;
@@ -44,7 +46,7 @@ public partial class InkRenderer : Renderer
   public override Dispatcher Dispatcher => _dispatcher;
   protected override void HandleException(Exception exception)
   {
-    AnsiConsole.WriteException(exception);
+    _ansiConsole.WriteException(exception);
   }
 
   public Task RenderPageAsync(IComponent component)

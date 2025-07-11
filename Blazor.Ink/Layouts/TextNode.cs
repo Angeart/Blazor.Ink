@@ -7,6 +7,7 @@ namespace Blazor.Ink.Layouts;
 
 public class TextNode : NodeBase<Components_Text>
 {
+    public TextNode(IAnsiConsole ansiConsole) : base(ansiConsole) { }
     private string Text { get; set; } = string.Empty;
     private int Width { get; set; }
     private int Height { get; set; }

@@ -56,8 +56,8 @@ public partial class InkRenderer
     {
         IInkNode? node = frame.Component switch
         {
-            Box => new BoxNode(),
-            Text => new TextNode(),
+            Box => new BoxNode(_ansiConsole),
+            Text => new TextNode(_ansiConsole),
             _ => null
         };
 

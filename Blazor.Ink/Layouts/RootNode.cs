@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Components;
+using Spectre.Console;
 using Spectre.Console.Rendering;
 
 namespace Blazor.Ink.Layouts;
 
 public class RootNode : NodeBase
 {
+    public RootNode(IAnsiConsole ansiConsole) : base(ansiConsole) { }
+
     public override Size Render(IRenderable renderable)
     {
         return new Size(0, 0);
