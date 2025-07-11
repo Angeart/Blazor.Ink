@@ -4,7 +4,7 @@
 namespace Blazor.Ink.Value;
 
 /// <summary>
-/// Vertical alignment of items
+///     Vertical alignment of items
 /// </summary>
 public enum AlignItems
 {

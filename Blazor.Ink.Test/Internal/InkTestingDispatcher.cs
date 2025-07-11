@@ -1,49 +1,72 @@
 using System.Collections.Concurrent;
+using System.Threading.Channels;
+using Blazor.Ink.Test.Helper;
 using Microsoft.AspNetCore.Components;
 
-namespace Blazor.Ink;
+namespace Blazor.Ink.Test.Internal;
 
-// TODO: 不要かもしれない
-/// <summary>
-///     Custom Dispatcher for Ink (compatible with Blazor's official Dispatcher).
-/// </summary>
-public class InkDispatcher : Dispatcher, IDisposable
+public class InkTestingDispatcher : Dispatcher, IInkStepDispatcher
 {
+    private readonly BlockingCollection<Func<Task>> _queue = new();
+    private readonly Channel<int> _stepChannel = Channel.CreateUnbounded<int>();
+    private readonly Channel<int> _finishCurrentStepChannel = Channel.CreateUnbounded<int>();
     private readonly CancellationTokenSource _cts = new();
-    private readonly BlockingCollection<Action> _queue = new();
-    private int _dispatcherThreadId;
+    private readonly SingleThreadSynchronizationContext _context = new();
 
-    public InkDispatcher()
+    public InkTestingDispatcher()
     {
-        var dispatcherThread = new Thread(RunLoop) { IsBackground = false };
+        var dispatcherThread = new Thread(RunLoop)
+        {
+            IsBackground = false,
+            Name = "InkTestingDispatcher"
+        };
         dispatcherThread.Start(_cts.Token);
     }
 
-    public void Dispose()
+    public async Task MoveNext(bool waitForEnqueueTask = true)
     {
-        _queue.Dispose();
-        _cts.Dispose();
+        if (waitForEnqueueTask)
+        {
+            await TaskHelper.WaitUntil(() => _queue.Count > 0, _cts.Token);
+        }
+        await _stepChannel.Writer.WriteAsync(0);
+        await _finishCurrentStepChannel.Reader.ReadAsync();
     }
 
-    private void RunLoop(object? tokenObj)
+    private async void RunLoop(object? tokenObj)
     {
         var maybeToken = (CancellationToken?)tokenObj;
         if (maybeToken is null)
-            throw new ArgumentNullException(nameof(tokenObj), "CancellationToken must be provided.");
-        var token = maybeToken.Value;
-        _dispatcherThreadId = Thread.CurrentThread.ManagedThreadId;
-        SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
-        foreach (var action in _queue.GetConsumingEnumerable())
         {
-            action();
-            if (_queue.IsCompleted || token.IsCancellationRequested) break;
+            throw new ArgumentNullException(nameof(tokenObj), "CancellationToken must be provided.");
+        }
+        var token = maybeToken.Value;
+        while (true)
+        {
+            await _stepChannel.Reader.ReadAsync(token);
+            SynchronizationContext.SetSynchronizationContext(_context);
+            var actions = new List<Func<Task>>();
+            while (_queue.TryTake(out var action))
+            {
+                actions.Add(action);
+            }
+
+            foreach (var a in actions)
+            {
+                await a();
+            }
+            
+            await _finishCurrentStepChannel.Writer.WriteAsync(0, token);
+            
+            token.ThrowIfCancellationRequested();
+            if (_queue.IsCompleted)
+            {
+                break;
+            }
         }
     }
 
-    public override bool CheckAccess()
-    {
-        return Thread.CurrentThread.ManagedThreadId == _dispatcherThreadId;
-    }
+    public override bool CheckAccess() => SynchronizationContext.Current == _context;
 
     public override Task InvokeAsync(Action workItem)
     {
@@ -59,6 +82,8 @@ public class InkDispatcher : Dispatcher, IDisposable
             {
                 tcs.SetException(ex);
             }
+            
+            return tcs.Task;
         });
         return tcs.Task;
     }
@@ -76,6 +101,8 @@ public class InkDispatcher : Dispatcher, IDisposable
             {
                 tcs.SetException(ex);
             }
+
+            return tcs.Task;
         });
         return tcs.Task;
     }
@@ -83,7 +110,7 @@ public class InkDispatcher : Dispatcher, IDisposable
     public override Task InvokeAsync(Func<Task> workItem)
     {
         var tcs = new TaskCompletionSource<object?>();
-        _queue.Add(async void () =>
+        _queue.Add(async Task () =>
         {
             try
             {
@@ -101,7 +128,7 @@ public class InkDispatcher : Dispatcher, IDisposable
     public override Task<TResult> InvokeAsync<TResult>(Func<Task<TResult>> workItem)
     {
         var tcs = new TaskCompletionSource<TResult>();
-        _queue.Add(async void () =>
+        _queue.Add(async Task () =>
         {
             try
             {
@@ -115,8 +142,12 @@ public class InkDispatcher : Dispatcher, IDisposable
         return tcs.Task;
     }
 
-    public void Stop()
+    public void Stop() => _queue.CompleteAdding();
+
+    public void Dispose()
     {
         _queue.CompleteAdding();
+        _queue.Dispose();
+        _cts.Dispose();
     }
 }

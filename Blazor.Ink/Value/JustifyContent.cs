@@ -4,7 +4,7 @@
 namespace Blazor.Ink.Value;
 
 /// <summary>
-/// Main axis alignment
+///     Main axis alignment
 /// </summary>
 public enum JustifyContent
 {

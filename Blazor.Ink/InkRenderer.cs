@@ -1,24 +1,19 @@
-using Microsoft.AspNetCore.Components.RenderTree;
+using Blazor.Ink.Layouts;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
-using Blazor.Ink.Components;
-using Blazor.Ink.Layouts;
-using Spectre.Console.Rendering;
 
 namespace Blazor.Ink;
 
 /// <summary>
-/// Template for a custom Renderer that converts Blazor's render tree to a TUI.
+///     Template for a custom Renderer that converts Blazor's render tree to a TUI.
 /// </summary>
 public partial class InkRenderer : Renderer
 {
-    private readonly ILogger<InkRenderer> _logger;
     private readonly IAnsiConsole _ansiConsole;
-    private int _currentCursorY = 0;
-
-    // Implementation of abstract members for Blazor Renderer.
-    public override Dispatcher Dispatcher { get; }
+    private readonly ILogger<InkRenderer> _logger;
+    private int _currentCursorY;
 
     public InkRenderer(
         IServiceProvider serviceProvider,
@@ -31,6 +26,9 @@ public partial class InkRenderer : Renderer
         _ansiConsole = ansiConsole;
         Dispatcher = dispatcher;
     }
+
+    // Implementation of abstract members for Blazor Renderer.
+    public override Dispatcher Dispatcher { get; }
 
     protected override Task UpdateDisplayAsync(in RenderBatch renderBatch)
     {
@@ -59,12 +57,9 @@ public partial class InkRenderer : Renderer
 
     public Task RenderPageAsync(IComponent component)
     {
-        var id = base.AssignRootComponentId(component);
-        if (id < 0)
-        {
-            throw new InvalidOperationException("Failed to assign component ID.");
-        }
+        var id = AssignRootComponentId(component);
+        if (id < 0) throw new InvalidOperationException("Failed to assign component ID.");
 
-        return base.RenderRootComponentAsync(id);
+        return RenderRootComponentAsync(id);
     }
 }

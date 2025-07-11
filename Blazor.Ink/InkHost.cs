@@ -8,16 +8,32 @@ namespace Blazor.Ink;
 
 public class InkHost : IHost
 {
-    private readonly IServiceProvider _provider;
     private readonly CancellationTokenSource _cts = new();
     private readonly HashSet<Type> _registeredComponents = new();
     private Type? _currentComponentType;
     private InkRenderer? _renderer; // Added: InkRenderer as a field.
-    public IServiceProvider Services => _provider;
 
     public InkHost(IServiceProvider provider)
     {
-        _provider = provider;
+        Services = provider;
+    }
+
+    public IServiceProvider Services { get; }
+
+    public Task StartAsync(CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken = default)
+    {
+        _cts.Cancel();
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _cts.Dispose();
     }
 
     public void RegisterComponents(IEnumerable<Type> components)
@@ -28,10 +44,10 @@ public class InkHost : IHost
     public async Task RunAsync(CancellationToken cancellationToken = default)
     {
         SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
-        var loggerFactory = _provider.GetRequiredService<ILoggerFactory>();
-        var console = _provider.GetRequiredService<IAnsiConsole>();
-        var dispatcher = _provider.GetRequiredService<Dispatcher>();
-        _renderer = new InkRenderer(_provider, loggerFactory, console, dispatcher); // Instantiate only once here.
+        var loggerFactory = Services.GetRequiredService<ILoggerFactory>();
+        var console = Services.GetRequiredService<IAnsiConsole>();
+        var dispatcher = Services.GetRequiredService<Dispatcher>();
+        _renderer = new InkRenderer(Services, loggerFactory, console, dispatcher); // Instantiate only once here.
         await StartAsync(cancellationToken);
         // Main TUI event loop (waits until process ends, e.g., Ctrl+C).
         try
@@ -53,7 +69,7 @@ public class InkHost : IHost
         if (!_registeredComponents.Contains(type))
             throw new InvalidOperationException($"Component {type.Name} is not registered.");
         _currentComponentType = type;
-        var logger = _provider.GetRequiredService<ILogger<InkHost>>();
+        var logger = Services.GetRequiredService<ILogger<InkHost>>();
         try
         {
             await _renderer.Dispatcher.InvokeAsync(RenderCurrentComponent);
@@ -70,18 +86,5 @@ public class InkHost : IHost
         if (_currentComponentType == null || _renderer == null) return Task.CompletedTask;
         var componentInstance = Activator.CreateInstance(_currentComponentType) as IComponent;
         return _renderer.RenderPageAsync(componentInstance!); // Reuse instance
-    }
-
-    public Task StartAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
-
-    public Task StopAsync(CancellationToken cancellationToken = default)
-    {
-        _cts.Cancel();
-        return Task.CompletedTask;
-    }
-
-    public void Dispose()
-    {
-        _cts.Dispose();
     }
 }

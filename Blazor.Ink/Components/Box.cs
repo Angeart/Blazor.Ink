@@ -1,35 +1,19 @@
-using Microsoft.AspNetCore.Components;
 using Blazor.Ink.Value;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Spectre.Console;
-using Overflow = Blazor.Ink.Value.Overflow;
 using Value_Overflow = Blazor.Ink.Value.Overflow;
 
 namespace Blazor.Ink.Components;
 
 /// <summary>
-/// Equivalent to Ink's Box. TUI element with border, padding, margin, etc.
+///     Equivalent to Ink's Box. TUI element with border, padding, margin, etc.
 /// </summary>
-public partial class Box : ComponentBase, IInkComponent, IPadding, IMargin
+public class Box : ComponentBase, IInkComponent, IPadding, IMargin
 {
     [Parameter] public Position Position { get; set; } = Position.Relative;
     [Parameter] public int RowGap { get; set; } = 0;
     [Parameter] public int Gap { get; set; } = 0;
-    [Parameter] public int? Padding { get; set; }
-    [Parameter] public int? PaddingX { get; set; }
-    [Parameter] public int? PaddingY { get; set; }
-    [Parameter] public int? PaddingTop { get; set; }
-    [Parameter] public int? PaddingBottom { get; set; }
-    [Parameter] public int? PaddingLeft { get; set; }
-    [Parameter] public int? PaddingRight { get; set; }
-
-    [Parameter] public int? Margin { get; set; }
-    [Parameter] public int? MarginX { get; set; }
-    [Parameter] public int? MarginY { get; set; }
-    [Parameter] public int? MarginTop { get; set; }
-    [Parameter] public int? MarginBottom { get; set; }
-    [Parameter] public int? MarginLeft { get; set; }
-    [Parameter] public int? MarginRight { get; set; }
 
     [Parameter] public Color? BorderColor { get; set; }
 
@@ -60,6 +44,21 @@ public partial class Box : ComponentBase, IInkComponent, IPadding, IMargin
 
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter] public int? Margin { get; set; }
+    [Parameter] public int? MarginX { get; set; }
+    [Parameter] public int? MarginY { get; set; }
+    [Parameter] public int? MarginTop { get; set; }
+    [Parameter] public int? MarginBottom { get; set; }
+    [Parameter] public int? MarginLeft { get; set; }
+    [Parameter] public int? MarginRight { get; set; }
+    [Parameter] public int? Padding { get; set; }
+    [Parameter] public int? PaddingX { get; set; }
+    [Parameter] public int? PaddingY { get; set; }
+    [Parameter] public int? PaddingTop { get; set; }
+    [Parameter] public int? PaddingBottom { get; set; }
+    [Parameter] public int? PaddingLeft { get; set; }
+    [Parameter] public int? PaddingRight { get; set; }
 
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {

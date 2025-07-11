@@ -1,13 +1,15 @@
 using Spectre.Console;
 using YogaSharp;
 using Components_Text = Blazor.Ink.Components.Text;
-using Text = Blazor.Ink.Components.Text;
 
 namespace Blazor.Ink.Layouts;
 
 public class TextNode : NodeBase<Components_Text>
 {
-    public TextNode(IAnsiConsole ansiConsole) : base(ansiConsole) { }
+    public TextNode(IAnsiConsole ansiConsole) : base(ansiConsole)
+    {
+    }
+
     private string Text { get; set; } = string.Empty;
     private int Width { get; set; }
     private int Height { get; set; }

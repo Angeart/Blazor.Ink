@@ -1,7 +1,7 @@
 namespace Blazor.Ink.Value;
 
 /// <summary>
-/// Positioning method
+///     Positioning method
 /// </summary>
 public enum Position
 {

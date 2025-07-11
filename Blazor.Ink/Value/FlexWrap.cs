@@ -4,7 +4,7 @@
 namespace Blazor.Ink.Value;
 
 /// <summary>
-/// Flex wrapping
+///     Flex wrapping
 /// </summary>
 public enum FlexWrap
 {

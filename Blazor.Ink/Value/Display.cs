@@ -4,7 +4,7 @@
 namespace Blazor.Ink.Value;
 
 /// <summary>
-/// Display state
+///     Display state
 /// </summary>
 public enum Display
 {

@@ -1,19 +1,22 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Blazor.Ink;
 
 public class InkApplication
 {
     private readonly IServiceProvider _provider;
-    public string[] Args { get; }
+
     public InkApplication(IServiceProvider provider, string[] args)
     {
         _provider = provider;
         Args = args;
     }
 
-    public async Task RunAsync<TInitialPage>(CancellationToken cancellationToken = default) where TInitialPage : IComponent
+    public string[] Args { get; }
+
+    public async Task RunAsync<TInitialPage>(CancellationToken cancellationToken = default)
+        where TInitialPage : IComponent
     {
         var host = _provider.GetRequiredService<InkHost>();
         var task = host.RunAsync(cancellationToken);
@@ -33,7 +36,7 @@ public class InkApplication
         var host = _provider.GetRequiredService<InkHost>();
         host.RegisterComponents(components);
     }
-    
+
     // TODO: parameterized navigation
     public Task Nagivate<TPage>() where TPage : IComponent
     {

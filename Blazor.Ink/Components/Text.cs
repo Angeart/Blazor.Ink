@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Components.Rendering;
 
 namespace Blazor.Ink.Components;
 
-public partial class Text : ComponentBase, IInkComponent
+public class Text : ComponentBase, IInkComponent
 {
-    [Parameter]
-    public RenderFragment ChildContent { get; set; } = null!;
+    [Parameter] public RenderFragment ChildContent { get; set; } = null!;
 
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {

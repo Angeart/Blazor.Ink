@@ -4,7 +4,7 @@
 namespace Blazor.Ink.Value;
 
 /// <summary>
-/// Overflow behavior
+///     Overflow behavior
 /// </summary>
 public enum Overflow
 {

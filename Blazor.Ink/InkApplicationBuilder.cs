@@ -6,14 +6,14 @@ namespace Blazor.Ink;
 
 public class InkApplicationBuilder
 {
-    public IServiceCollection Services { get; }
-    public string[] Args { get; }
-
     public InkApplicationBuilder(string[] args)
     {
         Args = args;
         Services = new ServiceCollection();
     }
+
+    public IServiceCollection Services { get; }
+    public string[] Args { get; }
 
     public InkApplication Build()
     {
@@ -25,10 +25,10 @@ public class InkApplicationBuilder
     public InkApplicationBuilder UseDefaultServices()
     {
         Services.AddSingleton<IAnsiConsole>(
-            _ => AnsiConsole.Create(new()));
+            _ => AnsiConsole.Create(new AnsiConsoleSettings()));
         Services.AddLogging();
         Services.AddSingleton<InkHost>();
-        Services.AddSingleton<Dispatcher, InkDispatcher>();
+        Services.AddSingleton<Dispatcher>(_ => Dispatcher.CreateDefault());
         return this;
     }
 

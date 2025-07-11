@@ -12,7 +12,7 @@ public readonly record struct Size(int Width, int Height)
     {
         return new Size(Math.Max(a.Width, b.Width), Math.Max(a.Height, b.Height));
     }
-};
+}
 
 public readonly record struct Margin(int Top, int Right, int Bottom, int Left);
 
@@ -30,22 +30,20 @@ public interface IInkNode : IDisposable
 
 public abstract unsafe class NodeBase : IInkNode
 {
-    public readonly YGNode* Node = YGNode.New();
-    public readonly YGConfig* Config = YGConfig.GetDefault();
-    protected List<NodeBase> Children { get; } = new();
     protected readonly IAnsiConsole _ansiConsole;
+    public readonly YGConfig* Config = YGConfig.GetDefault();
+    public readonly YGNode* Node = YGNode.New();
 
     protected NodeBase(IAnsiConsole ansiConsole)
     {
         _ansiConsole = ansiConsole;
     }
 
+    protected List<NodeBase> Children { get; } = new();
+
     public void Dispose()
     {
-        for (var i = 0; i < Children.Count; i++)
-        {
-            Children[i].Dispose();
-        }
+        for (var i = 0; i < Children.Count; i++) Children[i].Dispose();
 
         Node->Dispose();
     }
@@ -57,37 +55,13 @@ public abstract unsafe class NodeBase : IInkNode
         Node->CalculateLayout();
     }
 
-    private void UpdateNodeTree()
-    {
-        for (var i = 0; i < Children.Count; i++)
-        {
-            var child = Children[i];
-            child.UpdateNodeTree();
-            Node->InsertChild(child.Node, i);
-        }
-    }
-
     public abstract Size Render(IRenderable renderable);
 
     public void AppendChild(IInkNode? child)
     {
-        if (child is not NodeBase node)
-        {
-            return;
-        }
+        if (child is not NodeBase node) return;
 
         Children.Add(node);
-    }
-
-    protected abstract void ApplyLayoutImpl();
-
-    protected void ApplyLayout()
-    {
-        ApplyLayoutImpl();
-        foreach (var child in Children)
-        {
-            child.ApplyLayout();
-        }
     }
 
     public abstract IInkNode ApplyComponent(IComponent component);
@@ -99,20 +73,67 @@ public abstract unsafe class NodeBase : IInkNode
     }
 
     /// <summary>
-    /// Builds the render tree for the specified child element.
+    ///     Builds the render tree for the specified child element.
     /// </summary>
     /// <remarks>
-    /// Should call CalculateLayout() before this method to ensure the layout is calculated.
+    ///     Should call CalculateLayout() before this method to ensure the layout is calculated.
     /// </remarks>
     public abstract RenderTree BuildRenderTree();
+
+    private void UpdateNodeTree()
+    {
+        for (var i = 0; i < Children.Count; i++)
+        {
+            var child = Children[i];
+            child.UpdateNodeTree();
+            Node->InsertChild(child.Node, i);
+        }
+    }
+
+    protected abstract void ApplyLayoutImpl();
+
+    protected void ApplyLayout()
+    {
+        ApplyLayoutImpl();
+        foreach (var child in Children) child.ApplyLayout();
+    }
 }
 
 public abstract unsafe class NodeBase<TInkComponent> : NodeBase, IDisposable, IInkNode
     where TInkComponent : class, IInkComponent
 {
-    protected TInkComponent? Component { get; private set; } = null!;
+    protected NodeBase(IAnsiConsole ansiConsole) : base(ansiConsole)
+    {
+    }
 
-    protected NodeBase(IAnsiConsole ansiConsole) : base(ansiConsole) { }
+    protected TInkComponent? Component { get; private set; }
+
+    public override IInkNode ApplyComponent(IComponent component)
+    {
+        Component = component as TInkComponent;
+        if (Component is null)
+        {
+            _ansiConsole.WriteException(new NullReferenceException($"Component is null, actual parameter:{component}"));
+            return this;
+        }
+
+        return this;
+    }
+
+    public override Size Render(IRenderable renderable)
+    {
+        var left = (int)Node->GetComputedLeft();
+        var top = (int)Node->GetComputedTop();
+        var width = (int)Node->GetComputedWidth();
+        var height = (int)Node->GetComputedHeight();
+        _ansiConsole.Cursor.MoveRight(left);
+        _ansiConsole.Cursor.MoveDown(top);
+        // _ansiConsole.Cursor.SetPosition(left, top);
+        _ansiConsole.Write(renderable);
+        _ansiConsole.Cursor.MoveLeft(left + width);
+        _ansiConsole.Cursor.MoveUp(top + height);
+        return new Size(width, height);
+    }
 
     protected Size GetSize()
     {
@@ -137,31 +158,5 @@ public abstract unsafe class NodeBase<TInkComponent> : NodeBase, IDisposable, II
             (int)Node->GetComputedPadding(YGEdge.Right),
             (int)Node->GetComputedPadding(YGEdge.Bottom),
             (int)Node->GetComputedPadding(YGEdge.Left));
-    }
-
-    public override IInkNode ApplyComponent(IComponent component)
-    {
-        Component = component as TInkComponent;
-        if (Component is null)
-        {
-            _ansiConsole.WriteException(new NullReferenceException($"Component is null, actual parameter:{component}"));
-            return this;
-        }
-        return this;
-    }
-
-    public override Size Render(IRenderable renderable)
-    {
-        var left = (int)Node->GetComputedLeft();
-        var top = (int)Node->GetComputedTop();
-        var width = (int)Node->GetComputedWidth();
-        var height = (int)Node->GetComputedHeight();
-        _ansiConsole.Cursor.MoveRight(left);
-        _ansiConsole.Cursor.MoveDown(top);
-        // _ansiConsole.Cursor.SetPosition(left, top);
-        _ansiConsole.Write(renderable);
-        _ansiConsole.Cursor.MoveLeft(left + width);
-        _ansiConsole.Cursor.MoveUp(top + height);
-        return new Size(width, height);
     }
 }

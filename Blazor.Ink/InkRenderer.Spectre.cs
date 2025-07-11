@@ -1,7 +1,6 @@
 using System.Runtime.CompilerServices;
 using Blazor.Ink.Components;
 using Blazor.Ink.Layouts;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.RenderTree;
 using Spectre.Console;
 using Spectre.Console.Rendering;
@@ -11,15 +10,10 @@ namespace Blazor.Ink;
 
 public partial class InkRenderer
 {
-    private record struct RenderContext(int Position, IInkNode? Node)
-    {
-        public static RenderContext Create(int position) => new RenderContext(position, null);
-    }
-
     private RenderContext BuildSpectreRenderable(int componentId, ref RenderContext ctx)
     {
         Dispatcher.AssertAccess();
-        var frames = base.GetCurrentRenderTreeFrames(componentId);
+        var frames = GetCurrentRenderTreeFrames(componentId);
         return RenderFrames(componentId, frames, 0, frames.Count, ref ctx);
     }
 
@@ -31,10 +25,7 @@ public partial class InkRenderer
         while (position < endPosition)
         {
             var (next, _) = RenderCore(componentId, frames, position, ref ctx);
-            if (position == next)
-            {
-                throw new InvalidOperationException("We don't consume any input.");
-            }
+            if (position == next) throw new InvalidOperationException("We don't consume any input.");
 
             position = next;
         }
@@ -55,7 +46,7 @@ public partial class InkRenderer
             _ => NoopFrameType(ref frame, ref ctx)
         };
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private RenderContext NoopFrameType(ref RenderTreeFrame frame, ref RenderContext ctx)
     {
@@ -82,7 +73,7 @@ public partial class InkRenderer
         node?.ApplyComponent(frame.Component);
         ctx.Node?.AppendChild(node);
 
-        var newCtx = new RenderContext(0, Node: node);
+        var newCtx = new RenderContext(0, node);
         RenderChildComponent(ref frame, ref newCtx);
         return ctx with { Position = ++ctx.Position };
     }
@@ -90,5 +81,13 @@ public partial class InkRenderer
     private RenderContext RenderChildComponent(ref RenderTreeFrame componentFrame, ref RenderContext ctx)
     {
         return BuildSpectreRenderable(componentFrame.ComponentId, ref ctx);
+    }
+
+    private record struct RenderContext(int Position, IInkNode? Node)
+    {
+        public static RenderContext Create(int position)
+        {
+            return new RenderContext(position, null);
+        }
     }
 }

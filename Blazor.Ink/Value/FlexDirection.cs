@@ -4,7 +4,7 @@
 namespace Blazor.Ink.Value;
 
 /// <summary>
-/// Flex direction
+///     Flex direction
 /// </summary>
 public enum FlexDirection
 {
