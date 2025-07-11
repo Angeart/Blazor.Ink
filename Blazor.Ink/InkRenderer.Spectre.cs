@@ -57,7 +57,7 @@ public partial class InkRenderer
         IInkNode? node = frame.Component switch
         {
             Box => new BoxNode(),
-            Spectre.Console.Text => new TextNode(),
+            Text => new TextNode(),
             _ => null
         };
 
