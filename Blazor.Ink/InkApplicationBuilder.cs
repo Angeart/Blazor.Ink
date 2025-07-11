@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 
@@ -20,16 +21,17 @@ public class InkApplicationBuilder
             Services.BuildServiceProvider(),
             Args);
     }
-    
+
     public InkApplicationBuilder UseDefaultServices()
     {
         Services.AddSingleton<IAnsiConsole>(
             _ => AnsiConsole.Create(new()));
         Services.AddLogging();
         Services.AddSingleton<InkHost>();
+        Services.AddSingleton<Dispatcher, InkDispatcher>();
         return this;
     }
-    
+
     public InkApplicationBuilder ConfigureServices(
         Action<IServiceCollection> configure)
     {

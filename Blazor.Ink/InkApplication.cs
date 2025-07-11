@@ -1,9 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.RenderTree;
-using System.Threading;
-using Spectre.Console;
 
 namespace Blazor.Ink;
 
@@ -17,18 +13,31 @@ public class InkApplication
         Args = args;
     }
 
-    public async Task RunAsync<TInitialPage>() where TInitialPage : IComponent
+    public async Task RunAsync<TInitialPage>(CancellationToken cancellationToken = default) where TInitialPage : IComponent
     {
-        // Start the TUI event loop using InkHost
         var host = _provider.GetRequiredService<InkHost>();
-        var task = host.RunAsync();
-        host.Navigate<TInitialPage>();
+        var task = host.RunAsync(cancellationToken);
+        await host.Navigate<TInitialPage>();
         await task;
+    }
+
+    public Task RunAsync(CancellationToken cancellationToken = default)
+    {
+        var host = _provider.GetRequiredService<InkHost>();
+        var task = host.RunAsync(cancellationToken);
+        return task;
     }
 
     public void RegisterComponents(IEnumerable<Type> components)
     {
         var host = _provider.GetRequiredService<InkHost>();
         host.RegisterComponents(components);
+    }
+    
+    // TODO: parameterized navigation
+    public Task Nagivate<TPage>() where TPage : IComponent
+    {
+        var host = _provider.GetRequiredService<InkHost>();
+        return host.Navigate<TPage>();
     }
 }

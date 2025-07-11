@@ -13,49 +13,58 @@ namespace Blazor.Ink;
 /// </summary>
 public partial class InkRenderer : Renderer
 {
-  private readonly ILogger<InkRenderer> _logger;
-  private readonly IAnsiConsole _ansiConsole;
-  private int _currentCursorY = 0;
-  public InkRenderer(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IAnsiConsole ansiConsole) : base(serviceProvider, loggerFactory)
-  {
-    _logger = loggerFactory.CreateLogger<InkRenderer>();
-    _ansiConsole = ansiConsole;
-  }
+    private readonly ILogger<InkRenderer> _logger;
+    private readonly IAnsiConsole _ansiConsole;
+    private int _currentCursorY = 0;
 
-  protected override Task UpdateDisplayAsync(in RenderBatch renderBatch)
-  {
-    _logger.LogDebug("ReferenceFrames.Count: {Count}", renderBatch.ReferenceFrames.Count);
-    // Render the Root node first.
-    var ctx = new RenderContext(0, new RootNode(_ansiConsole));
-    var rootCtx = BuildSpectreRenderable(0, ref ctx);
-    if (rootCtx.Node is not null)
+    // Implementation of abstract members for Blazor Renderer.
+    public override Dispatcher Dispatcher { get; }
+
+    public InkRenderer(
+        IServiceProvider serviceProvider,
+        ILoggerFactory loggerFactory,
+        IAnsiConsole ansiConsole,
+        Dispatcher dispatcher) : base(
+        serviceProvider, loggerFactory)
     {
-      _ansiConsole.Cursor.MoveUp(_currentCursorY);
-      rootCtx.Node.CalculateLayout();
-      var renderTree = rootCtx.Node.BuildRenderTree();
-      var size = renderTree.Render();
-      rootCtx.Node.Dispose();
-      _ansiConsole.Cursor.MoveDown(size.Height);
-      _currentCursorY = size.Height;
+        _logger = loggerFactory.CreateLogger<InkRenderer>();
+        _ansiConsole = ansiConsole;
+        Dispatcher = dispatcher;
     }
-    return Task.CompletedTask;
-  }
 
-  // Implementation of abstract members for Blazor Renderer.
-  private readonly InkDispatcher _dispatcher = new InkDispatcher();
-  public override Dispatcher Dispatcher => _dispatcher;
-  protected override void HandleException(Exception exception)
-  {
-    _ansiConsole.WriteException(exception);
-  }
-
-  public Task RenderPageAsync(IComponent component)
-  {
-    var id = base.AssignRootComponentId(component);
-    if (id < 0)
+    protected override Task UpdateDisplayAsync(in RenderBatch renderBatch)
     {
-      throw new InvalidOperationException("Failed to assign component ID.");
+        _logger.LogDebug("ReferenceFrames.Count: {Count}", renderBatch.ReferenceFrames.Count);
+        // Render the Root node first.
+        var ctx = new RenderContext(0, new RootNode(_ansiConsole));
+        var rootCtx = BuildSpectreRenderable(0, ref ctx);
+        if (rootCtx.Node is not null)
+        {
+            _ansiConsole.Cursor.MoveUp(_currentCursorY);
+            rootCtx.Node.CalculateLayout();
+            var renderTree = rootCtx.Node.BuildRenderTree();
+            var size = renderTree.Render();
+            rootCtx.Node.Dispose();
+            _ansiConsole.Cursor.MoveDown(size.Height);
+            _currentCursorY = size.Height;
+        }
+
+        return Task.CompletedTask;
     }
-    return base.RenderRootComponentAsync(id);
-  }
+
+    protected override void HandleException(Exception exception)
+    {
+        _ansiConsole.WriteException(exception);
+    }
+
+    public Task RenderPageAsync(IComponent component)
+    {
+        var id = base.AssignRootComponentId(component);
+        if (id < 0)
+        {
+            throw new InvalidOperationException("Failed to assign component ID.");
+        }
+
+        return base.RenderRootComponentAsync(id);
+    }
 }

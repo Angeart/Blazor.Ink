@@ -1,7 +1,9 @@
+using System.Runtime.CompilerServices;
 using Blazor.Ink.Components;
 using Blazor.Ink.Layouts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.RenderTree;
+using Spectre.Console;
 using Spectre.Console.Rendering;
 using Text = Blazor.Ink.Components.Text;
 
@@ -48,8 +50,24 @@ public partial class InkRenderer
         {
             RenderTreeFrameType.Text => new RenderContext(++position, ctx.Node?.ApplyText(frame.TextContent)),
             RenderTreeFrameType.Component => RenderComponent(ref frame, ref ctx),
-            _ => new RenderContext(++position, null)
+            RenderTreeFrameType.Element => UnsupportedFrameType(ref frame, ref ctx),
+            RenderTreeFrameType.Markup => UnsupportedFrameType(ref frame, ref ctx),
+            _ => NoopFrameType(ref frame, ref ctx)
         };
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private RenderContext NoopFrameType(ref RenderTreeFrame frame, ref RenderContext ctx)
+    {
+        return ctx with { Position = ++ctx.Position };
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private RenderContext UnsupportedFrameType(ref RenderTreeFrame frame, ref RenderContext ctx)
+    {
+        _ansiConsole.WriteException(new InvalidOperationException(
+            $"Unsupported frame type: {frame.FrameType} at position {ctx.Position} in component {frame.ComponentId}"));
+        return ctx with { Position = ++ctx.Position };
     }
 
     private RenderContext RenderComponent(ref RenderTreeFrame frame, ref RenderContext ctx)
@@ -64,8 +82,9 @@ public partial class InkRenderer
         node?.ApplyComponent(frame.Component);
         ctx.Node?.AppendChild(node);
 
-        var nextCtx = new RenderContext(++ctx.Position, Node: node);
-        return RenderChildComponent(ref frame, ref nextCtx);
+        var newCtx = new RenderContext(0, Node: node);
+        RenderChildComponent(ref frame, ref newCtx);
+        return ctx with { Position = ++ctx.Position };
     }
 
     private RenderContext RenderChildComponent(ref RenderTreeFrame componentFrame, ref RenderContext ctx)
