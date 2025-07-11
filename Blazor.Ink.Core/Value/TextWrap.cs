@@ -1,7 +1,7 @@
 namespace Blazor.Ink.Core.Value;
 
 /// <summary>
-/// テキストの折り返し方法
+/// Text wrapping method
 /// </summary>
 public enum TextWrap
 {

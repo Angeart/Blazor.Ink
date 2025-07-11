@@ -96,7 +96,7 @@ public abstract unsafe class NodeBase : IInkNode
     /// Builds the render tree for the specified child element.
     /// </summary>
     /// <remarks>
-    /// Should be called CalculateLayout() before this method to ensure the layout is calculated.
+    /// Should call CalculateLayout() before this method to ensure the layout is calculated.
     /// </remarks>
     public abstract RenderTree BuildRenderTree();
 }

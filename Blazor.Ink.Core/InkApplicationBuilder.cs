@@ -11,7 +11,7 @@ public class InkApplicationBuilder
     {
         Args = args;
         Services = new ServiceCollection();
-        Services.AddLogging(); // 追加
+        Services.AddLogging(); // Added
     }
 
     public InkApplication Build()

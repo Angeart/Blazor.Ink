@@ -1,10 +1,10 @@
 // AlignItems.cs
-// Inkのstyles.tsを参考にしたアイテムの縦方向揃えのenum定義
+// Enum definition based on Ink's styles.ts for vertical alignment of items.
 
 namespace Blazor.Ink.Core.Value;
 
 /// <summary>
-/// アイテムの縦方向揃え
+/// Vertical alignment of items
 /// </summary>
 public enum AlignItems
 {

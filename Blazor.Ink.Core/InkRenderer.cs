@@ -9,7 +9,7 @@ using Spectre.Console.Rendering;
 namespace Blazor.Ink.Core;
 
 /// <summary>
-/// BlazorのレンダーツリーをTUIに変換するカスタムRendererの雛形
+/// Template for a custom Renderer that converts Blazor's render tree to a TUI.
 /// </summary>
 public partial class InkRenderer : Renderer
 {
@@ -23,7 +23,7 @@ public partial class InkRenderer : Renderer
   protected override Task UpdateDisplayAsync(in RenderBatch renderBatch)
   {
     _logger.LogDebug("ReferenceFrames.Count: {Count}", renderBatch.ReferenceFrames.Count);
-    // ひとまずRootをレンダーする
+    // Render the Root node first.
     var ctx = new RenderContext(0, new RootNode());
     var rootCtx = BuildSpectreRenderable(0, ref ctx);
     if (rootCtx.Node is not null)
@@ -39,8 +39,7 @@ public partial class InkRenderer : Renderer
     return Task.CompletedTask;
   }
 
-
-  // Blazor Rendererの抽象メンバ実装
+  // Implementation of abstract members for Blazor Renderer.
   private readonly InkDispatcher _dispatcher = new InkDispatcher();
   public override Dispatcher Dispatcher => _dispatcher;
   protected override void HandleException(Exception exception)

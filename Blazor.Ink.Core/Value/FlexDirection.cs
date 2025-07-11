@@ -1,10 +1,10 @@
 // FlexDirection.cs
-// Inkのstyles.tsを参考にしたフレックス方向のenum定義
+// Enum definition based on Ink's styles.ts for flex direction.
 
 namespace Blazor.Ink.Core.Value;
 
 /// <summary>
-/// フレックス方向
+/// Flex direction
 /// </summary>
 public enum FlexDirection
 {

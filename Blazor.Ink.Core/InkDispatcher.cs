@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Blazor.Ink.Core;
 
 /// <summary>
-/// Ink用のカスタムDispatcher（Blazor公式Dispatcher互換）
+/// Custom Dispatcher for Ink (compatible with Blazor's official Dispatcher).
 /// </summary>
 public class InkDispatcher : Dispatcher
 {

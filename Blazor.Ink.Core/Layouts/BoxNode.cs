@@ -21,8 +21,8 @@ public class BoxNode : NodeBase<Box>
     }
     protected override void ApplyLayoutImpl()
     {
-        // --- YogaSharpノードへのレイアウト情報反映 ---
-        // パディング
+        // --- Apply layout information to YogaSharp node ---
+        // Padding
         unsafe
         {
             Component?.ApplyPaddingTo(Node);
@@ -32,7 +32,7 @@ public class BoxNode : NodeBase<Box>
             // Gap
             Node->SetGap(YGGutter.All, Component!.Gap);
             Node->SetGap(YGGutter.Row, Component.RowGap);
-            // サイズ
+            // Size
             if (Component.Width is not null)
             {
                 Node->SetWidth(Component.Width.Value);
@@ -60,7 +60,7 @@ public class BoxNode : NodeBase<Box>
             {
                 Node->SetMinHeight(Component.MinHeight.Value);
             }
-            // フレックス
+            // Flex
             Node->SetFlexGrow(Component.FlexGrow);
             Node->SetFlexShrink(Component.FlexShrink);
             Node->SetFlexBasis(Component.FlexBasis);
@@ -69,13 +69,13 @@ public class BoxNode : NodeBase<Box>
             Node->SetAlignItems((YGAlign)Component.AlignItems);
             Node->SetAlignSelf((YGAlign)Component.AlignSelf);
             Node->SetJustifyContent((YGJustify)Component.JustifyContent);
-            // 配置
+            // Position
             Node->SetPositionType((YGPositionType)Component.Position);
             // Display
             Node->SetDisplay(Component.Display == Display.Flex ? YGDisplay.Flex : YGDisplay.None);
             // Overflow
             Node->SetOverflow((YGOverflow)Component.Overflow);
-            // --- ここまで ---
+            // --- End of layout application ---
         }
     }
 

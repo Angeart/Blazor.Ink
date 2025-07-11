@@ -1,10 +1,10 @@
 // FlexWrap.cs
-// Inkのstyles.tsを参考にしたフレックス折り返しのenum定義
+// Enum definition based on Ink's styles.ts for flex wrapping.
 
 namespace Blazor.Ink.Core.Value;
 
 /// <summary>
-/// フレックス折り返し
+/// Flex wrapping
 /// </summary>
 public enum FlexWrap
 {

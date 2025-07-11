@@ -1,10 +1,10 @@
 // Display.cs
-// Inkのstyles.tsを参考にした表示状態のenum定義
+// Enum definition based on Ink's styles.ts for display state.
 
 namespace Blazor.Ink.Core.Value;
 
 /// <summary>
-/// 表示状態
+/// Display state
 /// </summary>
 public enum Display
 {

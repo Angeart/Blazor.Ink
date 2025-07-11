@@ -18,7 +18,7 @@ public class InkApplication
 
     public async Task RunAsync<TComponent>() where TComponent : IComponent
     {
-        // InkHostを使ってTUIイベントループを起動
+        // Start the TUI event loop using InkHost
         var host = new InkHost(_provider);
         await host.RunAsync();
     }

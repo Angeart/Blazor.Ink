@@ -1,10 +1,10 @@
 // Overflow.cs
-// Inkのstyles.tsを参考にしたオーバーフロー挙動のenum定義
+// Enum definition based on Ink's styles.ts for overflow behavior.
 
 namespace Blazor.Ink.Core.Value;
 
 /// <summary>
-/// オーバーフロー挙動
+/// Overflow behavior
 /// </summary>
 public enum Overflow
 {

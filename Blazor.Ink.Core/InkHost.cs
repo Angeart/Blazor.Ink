@@ -15,7 +15,7 @@ public class InkHost : IHost
     private readonly CancellationTokenSource _cts = new();
     private readonly HashSet<Type> _registeredComponents = new();
     private Type? _currentComponentType;
-    private InkRenderer? _renderer; // 追加: InkRendererをフィールド化
+    private InkRenderer? _renderer; // Added: InkRenderer as a field.
     public IServiceProvider Services => _provider;
     public InkHost(IServiceProvider provider)
     {
@@ -30,20 +30,20 @@ public class InkHost : IHost
     {
         SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
         var loggerFactory = _provider.GetRequiredService<ILoggerFactory>();
-        _renderer = new InkRenderer(_provider, loggerFactory); // ここで1度だけ生成
+        _renderer = new InkRenderer(_provider, loggerFactory); // Instantiate only once here.
         await StartAsync(cancellationToken);
-        // メインTUIイベントループ（Ctrl+C等でプロセス終了まで待機）
+        // Main TUI event loop (waits until process ends, e.g., Ctrl+C).
         try
         {
             await Task.Delay(Timeout.Infinite, cancellationToken);
         }
-        catch (OperationCanceledException) { /* Ctrl+C等で終了 */ }
-        // _dispatcher.Stop(); ← 明示的な終了時のみ呼ぶ
+        catch (OperationCanceledException) { /* Ended by Ctrl+C, etc. */ }
+        // _dispatcher.Stop(); ← Call only on explicit shutdown.
     }
     public void Navigate<TComponent>() where TComponent : IComponent
     {
         if (_renderer == null)
-            throw new InvalidOperationException("InkHost.RunAsync()でRendererを初期化してからNavigateを呼んでください。");
+            throw new InvalidOperationException("Call Navigate after initializing Renderer with InkHost.RunAsync().");
         var type = typeof(TComponent);
         if (!_registeredComponents.Contains(type))
             throw new InvalidOperationException($"Component {type.Name} is not registered.");
@@ -55,14 +55,14 @@ public class InkHost : IHost
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "InkHost.Navigate<{Component}>: Dispatcher.InvokeAsyncで例外が発生しました。", type.Name);
+            logger.LogError(ex, "InkHost.Navigate<{Component}>: Exception occurred in Dispatcher.InvokeAsync.", type.Name);
         }
     }
     private Task RenderCurrentComponent()
     {
         if (_currentComponentType == null || _renderer == null) return Task.CompletedTask;
         var componentInstance = Activator.CreateInstance(_currentComponentType) as IComponent;
-        return _renderer.RenderPageAsync(componentInstance!); // 使い回し
+        return _renderer.RenderPageAsync(componentInstance!); // Reuse instance
     }
     public Task StartAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     public Task StopAsync(CancellationToken cancellationToken = default) { _cts.Cancel(); return Task.CompletedTask; }

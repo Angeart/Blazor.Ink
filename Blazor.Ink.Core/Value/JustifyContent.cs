@@ -1,10 +1,10 @@
 // JustifyContent.cs
-// Inkのstyles.tsを参考にした主軸方向の揃えのenum定義
+// Enum definition based on Ink's styles.ts for main axis alignment.
 
 namespace Blazor.Ink.Core.Value;
 
 /// <summary>
-/// 主軸方向の揃え
+/// Main axis alignment
 /// </summary>
 public enum JustifyContent
 {

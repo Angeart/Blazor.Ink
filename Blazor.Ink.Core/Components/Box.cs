@@ -7,7 +7,7 @@ using Overflow = Blazor.Ink.Core.Value.Overflow;
 namespace Blazor.Ink.Core.Components;
 
 /// <summary>
-/// InkのBoxに相当。枠やパディング、マージン等を持つTUI要素。
+/// Equivalent to Ink's Box. TUI element with border, padding, margin, etc.
 /// </summary>
 public partial class Box : ComponentBase, IInkComponent, IPadding, IMargin
 {
