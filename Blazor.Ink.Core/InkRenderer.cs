@@ -14,6 +14,7 @@ namespace Blazor.Ink.Core;
 public partial class InkRenderer : Renderer
 {
   private readonly ILogger<InkRenderer> _logger;
+  private int _currentCursorY = 0;
   public InkRenderer(IServiceProvider serviceProvider, ILoggerFactory loggerFactory) : base(serviceProvider, loggerFactory)
   {
     _logger = loggerFactory.CreateLogger<InkRenderer>();
@@ -27,10 +28,12 @@ public partial class InkRenderer : Renderer
     var rootCtx = BuildSpectreRenderable(0, ref ctx);
     if (rootCtx.Node is not null)
     {
+      AnsiConsole.Cursor.MoveUp(_currentCursorY);
       rootCtx.Node.CalculateLayout();
       var renderTree = rootCtx.Node.BuildRenderTree();
       var size = renderTree.Render();
       AnsiConsole.Cursor.MoveDown(size.Height);
+      _currentCursorY = size.Height;
     }
     return Task.CompletedTask;
   }

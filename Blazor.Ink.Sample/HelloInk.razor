@@ -1,3 +1,26 @@
+@using System.Timers
 <Box Padding="2">
-  <Text>Hello</Text>
+  <Text>@CurrentTime</Text>
 </Box>
+
+@code {
+  private Timer? _timer;
+  private string CurrentTime => DateTime.Now.ToString("HH:mm:ss");
+
+  protected override void OnInitialized()
+  {
+    base.OnInitialized();
+    _timer = new(1000);
+    _timer.Elapsed += OnTimerElapsed;
+    _timer.Start();
+  }
+
+  private async void OnTimerElapsed(object? sender, ElapsedEventArgs e)
+  {
+    await InvokeAsync(() =>
+    {
+      StateHasChanged();
+    });
+  }
+  
+}
