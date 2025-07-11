@@ -5,6 +5,10 @@ This workspace is a .NET solution for building a CLI library (Blazor.Ink) that r
 
 # Blazor.Ink Workspace Custom Instructions
 
+## Ignores
+- **/bin/**: Ignore all files in the bin directory.
+- **/obj/**: Ignore all files in the obj directory.
+
 ## Summary
 Blazor.Ink is a CLI library that converts Blazor's render tree into a TUI based on Spectre.Console. The core (Blazor.Ink.Core) transforms Blazor components into a TUI node tree, performs layout calculation with YogaSharp, and renders using Spectre.Console.
 
