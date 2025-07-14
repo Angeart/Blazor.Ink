@@ -1,12 +1,15 @@
-# Blazor.Ink
+# Blazor.Ink ✒️
 
-Blazor.Ink is a .NET solution for building rich terminal UIs (TUI) using Spectre.Console, inspired by Ink. It is composed of:
+Blazor.Ink is a .NET library for building rich terminal UIs (TUI) using [Spectre.Console](https://spectreconsole.net/), inspired by [Ink](https://github.com/vadimdemedes/ink).  
+It enables you to write Blazor components and render them as terminal applications.
 
-- **Blazor.Ink**: CLI library for rendering TUI components
-- **Blazor.Ink.Core**: Core logic and rendering engine
-- **Blazor.Ink.Test**: Tests for the CLI library
-- **Blazor.Ink.Core.Test**: Tests for the core logic
-- **Blazor.Ink.Sample**: Sample console app demonstrating usage
+## Solution Structure
+
+- **Blazor.Ink**: CLI library for rendering Blazor components as TUI using Spectre.Console and YogaSharp for layout.
+- **Blazor.Ink.Testing**: Utilities for testing, including test consoles and dispatcher mocks.
+- **Blazor.Ink.Testing.Tests**: Unit test for testing library.
+- **Blazor.Ink.Tests**: Unit and snapshot tests for the CLI library.
+- **Blazor.Ink.Sample**: Sample console app demonstrating usage.
 
 ## Getting Started
 
@@ -19,15 +22,18 @@ Blazor.Ink is a .NET solution for building rich terminal UIs (TUI) using Spectre
    dotnet run --project Blazor.Ink.Sample
    ```
 
-## Libraries Used
-- [Spectre.Console](https://spectreconsole.net/) for TUI rendering
+## Features
 
-## Project Structure
-- `Blazor.Ink/` - CLI library
-- `Blazor.Ink.Core/` - Core logic
-- `Blazor.Ink.Test/` - CLI tests
-- `Blazor.Ink.Core.Test/` - Core tests
-- `Blazor.Ink.Sample/` - Sample app
+- Write Blazor components and render them as terminal UIs.
+- Uses YogaSharp for flexbox layout calculation.
+- Renders to Spectre.Console for rich TUI output.
+- Supports unit and snapshot testing of TUI output.
+
+## Libraries Used
+
+- [Spectre.Console](https://spectreconsole.net/) for TUI rendering
+- [YogaSharp](https://github.com/LayoutFarm/YogaSharp) for layout calculation
+- [xUnit](https://xunit.net/) and [Verify](https://github.com/VerifyTests/Verify) for testing
 
 ## License
 MIT
