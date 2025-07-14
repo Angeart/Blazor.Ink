@@ -1,3 +1,4 @@
+using Blazor.Ink.Core;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -31,16 +32,16 @@ public class InkApplication
         return task;
     }
 
-    public void RegisterComponents(IEnumerable<Type> components)
-    {
-        var host = _provider.GetRequiredService<InkHost>();
-        host.RegisterComponents(components);
-    }
-
-    // TODO: parameterized navigation
-    public Task Nagivate<TPage>() where TPage : IComponent
+    public Task Navigate<TPage>() where TPage : IComponent
     {
         var host = _provider.GetRequiredService<InkHost>();
         return host.Navigate<TPage>();
+    }
+
+    public Task Navigate<TPage>(ComponentParametersBuilder<TPage>.BuilderFunction parametersBuilder)
+        where TPage : IComponent
+    {
+        var host = _provider.GetRequiredService<InkHost>();
+        return host.Navigate(parametersBuilder);
     }
 }

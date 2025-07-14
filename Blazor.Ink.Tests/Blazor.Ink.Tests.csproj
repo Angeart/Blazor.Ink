@@ -1,10 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <RootNamespace>Blazor.Ink.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,7 +28,31 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Blazor.Ink.Testing\Blazor.Ink.Testing.csproj" />
     <ProjectReference Include="..\Blazor.Ink\Blazor.Ink.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Components\TextTest_Simple.razor">
+      <DependentUpon>Text.cs</DependentUpon>
+    </Content>
+    <Content Update="Components\BoxTest_Empty.razor">
+      <DependentUpon>Box.cs</DependentUpon>
+    </Content>
+    <Content Update="Components\BoxTest_DirectText.razor">
+      <DependentUpon>Box.cs</DependentUpon>
+    </Content>
+    <Content Update="Tests\Components\TextTest_Simple.razor">
+      <DependentUpon>TextTest.cs</DependentUpon>
+    </Content>
+    <Content Update="Tests\Components\BoxTest_DirectText.razor">
+      <DependentUpon>BoxTest.cs</DependentUpon>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Internal\" />
+    <Folder Include="Tests\Components\Snapshots\" />
   </ItemGroup>
 
 </Project>

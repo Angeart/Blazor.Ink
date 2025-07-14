@@ -1,11 +1,11 @@
 using System.Collections.Concurrent;
 using System.Threading.Channels;
-using Blazor.Ink.Test.Helper;
+using Blazor.Ink.Testing.Helper;
 using Microsoft.AspNetCore.Components;
 
-namespace Blazor.Ink.Test.Internal;
+namespace Blazor.Ink.Testing.Internals;
 
-public class InkTestingDispatcher : Dispatcher, IInkStepDispatcher
+internal class InkTestingDispatcher : Dispatcher, IInkStepDispatcher
 {
     private readonly BlockingCollection<Func<Task>> _queue = new();
     private readonly Channel<int> _stepChannel = Channel.CreateUnbounded<int>();

@@ -13,10 +13,9 @@ public class BoxNode : NodeBase<Box>
 
     protected override void ApplyLayoutImpl()
     {
-        // --- Apply layout information to YogaSharp node ---
-        // Padding
         unsafe
         {
+            // --- Apply layout information to YogaSharp node ---
             Component?.ApplyPaddingTo(Node);
             Component?.ApplyMarginTo(Node);
             FixedBoxBorder.Default.ApplyBorderTo(Node);
@@ -60,18 +59,13 @@ public class BoxNode : NodeBase<Box>
     public override RenderTree BuildRenderTree()
     {
         var size = GetSize();
-        // var padding = GetPadding();
         var panel = new Panel(string.Empty)
         {
             Border = Component!.BorderStyle ?? BoxBorder.Square,
             BorderStyle = new Style(Component.BorderColor),
             Width = size.Width == 0 ? null : size.Width,
             Height = size.Height == 0 ? null : size.Height
-            // Padding = new Spectre.Console.Padding(padding.Top - 1, padding.Right, padding.Bottom, padding.Left)
         };
-        // var margin = GetMargin();
-        // var marginPanel = new Padder(panel, new Spectre.Console.Padding(
-        //     margin.Top, margin.Right, margin.Bottom, margin.Left));
         var childrenRenderTree = Children.Select(it => it.BuildRenderTree()).ToList();
 
         return new RenderTree(() => Render(panel), childrenRenderTree);

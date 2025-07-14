@@ -1,11 +1,12 @@
 using System.Runtime.CompilerServices;
-using Blazor.Ink.Test.Internal;
+using Blazor.Ink.Core;
+using Blazor.Ink.Testing.Internals;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using Spectre.Console.Testing;
 
-namespace Blazor.Ink.Test.Components;
+namespace Blazor.Ink.Testing;
 
 public class SnapshotTestBase
 {
@@ -15,11 +16,12 @@ public class SnapshotTestBase
     {
         s_settings.UseDirectory("Snapshots");
     }
-    protected async Task<TestContext> SetupComponent<TComponent>()
+    protected async Task<TestContext> SetupComponent<TComponent>(ComponentParametersBuilder<TComponent>.BuilderFunction? parametersBuilder = null)
         where TComponent : IComponent
     {
         var builder = Ink.CreateBuilder([]);
-        var testConsole = new TestConsole();
+        var testConsole = new CursorEmulatedTestConsole();
+        testConsole.EmitAnsiSequences = true;
         var dispatcher = new InkTestingDispatcher();
         builder.ConfigureServices(services =>
         {
@@ -31,8 +33,15 @@ public class SnapshotTestBase
         });
         var app = builder.Build();
         var cts = new CancellationTokenSource();
-        app.RegisterComponents([typeof(TComponent)]);
-        _ = app.RunAsync<TComponent>(cts.Token);
+        _ = app.RunAsync(cts.Token);
+        if (parametersBuilder is not null)
+        {
+            _ = app.Navigate(parametersBuilder);
+        }
+        else
+        {
+            _ = app.Navigate<TComponent>();
+        }
 
         void DisposeAction()
         {

@@ -3,17 +3,18 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
+using Size = Blazor.Ink.Layouts.Size;
 
-namespace Blazor.Ink;
+namespace Blazor.Ink.Core.Renderer;
 
 /// <summary>
 ///     Template for a custom Renderer that converts Blazor's render tree to a TUI.
 /// </summary>
-public partial class InkRenderer : Renderer
+public partial class InkRenderer : Microsoft.AspNetCore.Components.RenderTree.Renderer
 {
     private readonly IAnsiConsole _ansiConsole;
     private readonly ILogger<InkRenderer> _logger;
-    private int _currentCursorY;
+    private Size _lastRenderedMaxSize = new(0, 0);
 
     public InkRenderer(
         IServiceProvider serviceProvider,
@@ -25,6 +26,11 @@ public partial class InkRenderer : Renderer
         _logger = loggerFactory.CreateLogger<InkRenderer>();
         _ansiConsole = ansiConsole;
         Dispatcher = dispatcher;
+        Console.CancelKeyPress += (_, _) =>
+        {
+            // Move the cursor to the bottom of the console before exiting.
+            _ansiConsole.Cursor.MoveDown(_lastRenderedMaxSize.Height);
+        };
     }
 
     // Implementation of abstract members for Blazor Renderer.
@@ -38,13 +44,15 @@ public partial class InkRenderer : Renderer
         var rootCtx = BuildSpectreRenderable(0, ref ctx);
         if (rootCtx.Node is not null)
         {
-            _ansiConsole.Cursor.MoveUp(_currentCursorY);
+            // _ansiConsole.Cursor.Hide();
+            // _ansiConsole.Cursor.MoveUp(Math.Max(0, _currentCursorY - 1));
             rootCtx.Node.CalculateLayout();
             var renderTree = rootCtx.Node.BuildRenderTree();
             var size = renderTree.Render();
+            _lastRenderedMaxSize = Size.Max(_lastRenderedMaxSize, size);
+            // _currentCursorY = size.Height;
             rootCtx.Node.Dispose();
-            _ansiConsole.Cursor.MoveDown(size.Height);
-            _currentCursorY = size.Height;
+            // _ansiConsole.Cursor.MoveDown(_currentCursorY);
         }
 
         return Task.CompletedTask;

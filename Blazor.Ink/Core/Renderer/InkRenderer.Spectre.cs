@@ -6,7 +6,7 @@ using Spectre.Console;
 using Spectre.Console.Rendering;
 using Text = Blazor.Ink.Components.Text;
 
-namespace Blazor.Ink;
+namespace Blazor.Ink.Core.Renderer;
 
 public partial class InkRenderer
 {
@@ -40,9 +40,10 @@ public partial class InkRenderer
         return frame.FrameType switch
         {
             RenderTreeFrameType.Text => new RenderContext(++position, ctx.Node?.ApplyText(frame.TextContent)),
+            // NOTE: Ink does not support markup, directly add as a text content instead.
+            RenderTreeFrameType.Markup => new RenderContext(++position, ctx.Node?.ApplyText(frame.MarkupContent)),
             RenderTreeFrameType.Component => RenderComponent(ref frame, ref ctx),
             RenderTreeFrameType.Element => UnsupportedFrameType(ref frame, ref ctx),
-            RenderTreeFrameType.Markup => UnsupportedFrameType(ref frame, ref ctx),
             _ => NoopFrameType(ref frame, ref ctx)
         };
     }
@@ -69,6 +70,12 @@ public partial class InkRenderer
             Text => new TextNode(_ansiConsole),
             _ => null
         };
+
+        if (node is null)
+        {
+            // User-defined component, render it as a child component.
+            return RenderChildComponent(ref frame, ref ctx);
+        }
 
         node?.ApplyComponent(frame.Component);
         ctx.Node?.AppendChild(node);

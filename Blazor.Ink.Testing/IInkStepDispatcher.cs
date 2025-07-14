@@ -1,4 +1,4 @@
-namespace Blazor.Ink.Test.Internal;
+namespace Blazor.Ink.Testing;
 
 public interface IInkStepDispatcher : IDisposable
 {

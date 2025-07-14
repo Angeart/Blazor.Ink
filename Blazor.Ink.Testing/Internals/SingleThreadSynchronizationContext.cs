@@ -1,8 +1,8 @@
 using System.Collections.Concurrent;
 
-namespace Blazor.Ink.Test.Internal;
+namespace Blazor.Ink.Testing.Internals;
 
-public class SingleThreadSynchronizationContext : SynchronizationContext
+internal class SingleThreadSynchronizationContext : SynchronizationContext
 {
     private readonly BlockingCollection<(SendOrPostCallback Callback, object? State)> _queue = new();
     private readonly Thread _workerThread;

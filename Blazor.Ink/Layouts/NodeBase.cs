@@ -21,7 +21,7 @@ public readonly record struct Padding(int Top, int Right, int Bottom, int Left);
 public interface IInkNode : IDisposable
 {
     void CalculateLayout();
-    Size Render(IRenderable renderable);
+    Size Render(IRenderable renderable, bool inline = false);
     void AppendChild(IInkNode? child);
     IInkNode ApplyComponent(IComponent component);
     IInkNode ApplyText(string text);
@@ -55,7 +55,7 @@ public abstract unsafe class NodeBase : IInkNode
         Node->CalculateLayout();
     }
 
-    public abstract Size Render(IRenderable renderable);
+    public abstract Size Render(IRenderable renderable, bool inline = false);
 
     public void AppendChild(IInkNode? child)
     {
@@ -69,6 +69,9 @@ public abstract unsafe class NodeBase : IInkNode
 
     public virtual IInkNode ApplyText(string text)
     {
+        var textNode = new TextNode(_ansiConsole);
+        textNode.ApplyText(text);
+        AppendChild(textNode);
         return this;
     }
 
@@ -99,7 +102,7 @@ public abstract unsafe class NodeBase : IInkNode
     }
 }
 
-public abstract unsafe class NodeBase<TInkComponent> : NodeBase, IDisposable, IInkNode
+public abstract unsafe class NodeBase<TInkComponent> : NodeBase, IInkNode
     where TInkComponent : class, IInkComponent
 {
     protected NodeBase(IAnsiConsole ansiConsole) : base(ansiConsole)
@@ -120,7 +123,7 @@ public abstract unsafe class NodeBase<TInkComponent> : NodeBase, IDisposable, II
         return this;
     }
 
-    public override Size Render(IRenderable renderable)
+    public override Size Render(IRenderable renderable, bool inline = false)
     {
         var left = (int)Node->GetComputedLeft();
         var top = (int)Node->GetComputedTop();
@@ -128,10 +131,9 @@ public abstract unsafe class NodeBase<TInkComponent> : NodeBase, IDisposable, II
         var height = (int)Node->GetComputedHeight();
         _ansiConsole.Cursor.MoveRight(left);
         _ansiConsole.Cursor.MoveDown(top);
-        // _ansiConsole.Cursor.SetPosition(left, top);
         _ansiConsole.Write(renderable);
         _ansiConsole.Cursor.MoveLeft(left + width);
-        _ansiConsole.Cursor.MoveUp(top + height);
+        _ansiConsole.Cursor.MoveUp(top + height - (inline ? 1 : 0));
         return new Size(width, height);
     }
 

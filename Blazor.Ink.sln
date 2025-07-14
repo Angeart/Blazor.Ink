@@ -5,9 +5,13 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink", "Blazor.Ink\Blazor.Ink.csproj", "{3E62D2DB-2460-48A5-B8F0-CC7A9EFD8E81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Test", "Blazor.Ink.Test\Blazor.Ink.Test.csproj", "{68EE2B61-A36D-4EA8-8D3A-A6D2B933DBF4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Tests", "Blazor.Ink.Tests\Blazor.Ink.Tests.csproj", "{68EE2B61-A36D-4EA8-8D3A-A6D2B933DBF4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Sample", "Blazor.Ink.Sample\Blazor.Ink.Sample.csproj", "{7E68C393-AF89-481E-B788-64EDD427999F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Testing", "Blazor.Ink.Testing\Blazor.Ink.Testing.csproj", "{1E3E3800-76AD-4A27-87E9-F2702F9A34C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Testing.Tests", "Blazor.Ink.Testing.Tests\Blazor.Ink.Testing.Tests.csproj", "{DEA17204-F749-4961-A7B7-C6C070453FF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +34,13 @@ Global
 		{7E68C393-AF89-481E-B788-64EDD427999F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E68C393-AF89-481E-B788-64EDD427999F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E68C393-AF89-481E-B788-64EDD427999F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E3E3800-76AD-4A27-87E9-F2702F9A34C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E3E3800-76AD-4A27-87E9-F2702F9A34C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E3E3800-76AD-4A27-87E9-F2702F9A34C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E3E3800-76AD-4A27-87E9-F2702F9A34C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEA17204-F749-4961-A7B7-C6C070453FF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEA17204-F749-4961-A7B7-C6C070453FF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEA17204-F749-4961-A7B7-C6C070453FF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEA17204-F749-4961-A7B7-C6C070453FF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -10,8 +10,10 @@ public class RootNode : NodeBase
     {
     }
 
-    public override Size Render(IRenderable renderable)
+    public override Size Render(IRenderable renderable, bool inline = false)
     {
+        // The root node does not render anything itself.
+        // It is just a container for other nodes.
         return new Size(0, 0);
     }
 

@@ -1,3 +1,4 @@
+using Blazor.Ink.Core;
 using Blazor.Ink.Value;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
@@ -62,6 +63,6 @@ public class Box : ComponentBase, IInkComponent, IPadding, IMargin
 
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        builder.AddContent(0, ChildContent);
+        builder.AddContent(0, ChildContent ?? string.Empty.ToMarkupRenderFragment());
     }
 }

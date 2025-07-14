@@ -5,5 +5,4 @@ var builder = Ink.CreateBuilder(args);
 builder.UseDefaultServices();
 var app = builder.Build();
 
-app.RegisterComponents([typeof(HelloInk)]);
 await app.RunAsync<HelloInk>();

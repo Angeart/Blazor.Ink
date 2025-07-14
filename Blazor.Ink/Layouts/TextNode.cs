@@ -26,14 +26,15 @@ public class TextNode : NodeBase<Components_Text>
 
     public override RenderTree BuildRenderTree()
     {
-        return new RenderTree(() => Render(new Markup(Text)));
+        return new RenderTree(() => Render(new Markup(Text), true));
     }
 
     public override IInkNode ApplyText(string text)
     {
+        var markup = new Markup(text);
         Text = text;
-        Width = new Markup(Text).Length;
-        Height = Text.Split("\n").Length;
+        Width = markup.Length;
+        Height = markup.Lines;
         return this;
     }
 }

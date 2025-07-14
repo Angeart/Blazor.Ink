@@ -1,3 +1,5 @@
+using Blazor.Ink.Core;
+using Blazor.Ink.Core.Renderer;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,8 +11,6 @@ namespace Blazor.Ink;
 public class InkHost : IHost
 {
     private readonly CancellationTokenSource _cts = new();
-    private readonly HashSet<Type> _registeredComponents = new();
-    private Type? _currentComponentType;
     private InkRenderer? _renderer; // Added: InkRenderer as a field.
 
     public InkHost(IServiceProvider provider)
@@ -19,6 +19,7 @@ public class InkHost : IHost
     }
 
     public IServiceProvider Services { get; }
+
 
     public Task StartAsync(CancellationToken cancellationToken = default)
     {
@@ -34,11 +35,6 @@ public class InkHost : IHost
     public void Dispose()
     {
         _cts.Dispose();
-    }
-
-    public void RegisterComponents(IEnumerable<Type> components)
-    {
-        foreach (var t in components) _registeredComponents.Add(t);
     }
 
     public async Task RunAsync(CancellationToken cancellationToken = default)
@@ -61,18 +57,17 @@ public class InkHost : IHost
         // _dispatcher.Stop(); ← Call only on explicit shutdown.
     }
 
-    public async Task Navigate<TComponent>() where TComponent : IComponent
+    public async Task Navigate<TComponent>(ComponentParametersBuilder<TComponent>.BuilderFunction? parameterBuilder = null) where TComponent : IComponent
     {
         if (_renderer == null)
             throw new InvalidOperationException("Call Navigate after initializing Renderer with InkHost.RunAsync().");
         var type = typeof(TComponent);
-        if (!_registeredComponents.Contains(type))
-            throw new InvalidOperationException($"Component {type.Name} is not registered.");
-        _currentComponentType = type;
         var logger = Services.GetRequiredService<ILogger<InkHost>>();
+        parameterBuilder ??= b => b;
+        var parameters = parameterBuilder.Invoke(new()).Build();
         try
         {
-            await _renderer.Dispatcher.InvokeAsync(RenderCurrentComponent);
+            await _renderer.Dispatcher.InvokeAsync(() => RenderComponent(type, parameters));
         }
         catch (Exception ex)
         {
@@ -81,10 +76,12 @@ public class InkHost : IHost
         }
     }
 
-    private Task RenderCurrentComponent()
+    private Task RenderComponent(Type componentType, ParameterCollection parameters)
     {
-        if (_currentComponentType == null || _renderer == null) return Task.CompletedTask;
-        var componentInstance = Activator.CreateInstance(_currentComponentType) as IComponent;
-        return _renderer.RenderPageAsync(componentInstance!); // Reuse instance
+        if (_renderer == null)
+            return Task.CompletedTask;
+        var fragment = parameters.AsRenderFragment(componentType);
+        var wrapper = new RootComponent(fragment);
+        return _renderer.RenderPageAsync(wrapper);
     }
 }

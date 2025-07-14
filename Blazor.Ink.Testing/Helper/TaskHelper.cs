@@ -1,4 +1,4 @@
-namespace Blazor.Ink.Test.Helper;
+namespace Blazor.Ink.Testing.Helper;
 
 public static class TaskHelper
 {
