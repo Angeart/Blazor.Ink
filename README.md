@@ -1,4 +1,8 @@
-# Blazor.Ink ✒️
+<div align="center">
+<img src="./Blazor.Ink/icon.png"/>
+</div>
+
+# Blazor.Ink
 
 Blazor.Ink is a .NET library for building rich terminal UIs (TUI) using [Spectre.Console](https://spectreconsole.net/), inspired by [Ink](https://github.com/vadimdemedes/ink).  
 It enables you to write Blazor components and render them as terminal applications.
