@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <ItemGroup>
-    <ProjectReference Include="..\Blazor.Ink\Blazor.Ink.csproj" />
+    <ProjectReference Include="..\..\src\Blazor.Ink\Blazor.Ink.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

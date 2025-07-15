@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink", "Blazor.Ink\Blazor.Ink.csproj", "{3E62D2DB-2460-48A5-B8F0-CC7A9EFD8E81}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink", "src\Blazor.Ink\Blazor.Ink.csproj", "{3E62D2DB-2460-48A5-B8F0-CC7A9EFD8E81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Tests", "Blazor.Ink.Tests\Blazor.Ink.Tests.csproj", "{68EE2B61-A36D-4EA8-8D3A-A6D2B933DBF4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Tests", "src\Blazor.Ink.Tests\Blazor.Ink.Tests.csproj", "{68EE2B61-A36D-4EA8-8D3A-A6D2B933DBF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Sample", "Blazor.Ink.Sample\Blazor.Ink.Sample.csproj", "{7E68C393-AF89-481E-B788-64EDD427999F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Sample", "examples\Blazor.Ink.Sample\Blazor.Ink.Sample.csproj", "{7E68C393-AF89-481E-B788-64EDD427999F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Testing", "Blazor.Ink.Testing\Blazor.Ink.Testing.csproj", "{1E3E3800-76AD-4A27-87E9-F2702F9A34C5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Testing", "src\Blazor.Ink.Testing\Blazor.Ink.Testing.csproj", "{1E3E3800-76AD-4A27-87E9-F2702F9A34C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Testing.Tests", "Blazor.Ink.Testing.Tests\Blazor.Ink.Testing.Tests.csproj", "{DEA17204-F749-4961-A7B7-C6C070453FF3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Ink.Testing.Tests", "src\Blazor.Ink.Testing.Tests\Blazor.Ink.Testing.Tests.csproj", "{DEA17204-F749-4961-A7B7-C6C070453FF3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Items", "Items", "{9491A14B-C743-4442-890B-509A65A386D5}"
 	ProjectSection(SolutionItems) = preProject
