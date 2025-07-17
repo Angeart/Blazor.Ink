@@ -3,7 +3,6 @@ using Blazor.Ink.Components;
 using Blazor.Ink.Layouts;
 using Microsoft.AspNetCore.Components.RenderTree;
 using Spectre.Console;
-using Spectre.Console.Rendering;
 using Text = Blazor.Ink.Components.Text;
 
 namespace Blazor.Ink.Core.Renderer;
@@ -14,17 +13,16 @@ public partial class InkRenderer
     {
         Dispatcher.AssertAccess();
         var frames = GetCurrentRenderTreeFrames(componentId);
-        return RenderFrames(componentId, frames, 0, frames.Count, ref ctx);
+        return RenderFrames(frames, 0, frames.Count, ref ctx);
     }
 
-    private RenderContext RenderFrames(int componentId, ArrayRange<RenderTreeFrame> frames, int position,
+    private RenderContext RenderFrames(ArrayRange<RenderTreeFrame> frames, int position,
         int maxElements, ref RenderContext ctx)
     {
-        List<IRenderable> renderables = new();
         var endPosition = position + maxElements;
         while (position < endPosition)
         {
-            var (next, _) = RenderCore(componentId, frames, position, ref ctx);
+            var (next, _) = RenderCore(frames, position, ref ctx);
             if (position == next) throw new InvalidOperationException("We don't consume any input.");
 
             position = next;
@@ -33,7 +31,7 @@ public partial class InkRenderer
         return ctx with { Position = position };
     }
 
-    private RenderContext RenderCore(int componentId, ArrayRange<RenderTreeFrame> frames, int position,
+    private RenderContext RenderCore(ArrayRange<RenderTreeFrame> frames, int position,
         ref RenderContext ctx)
     {
         ref var frame = ref frames.Array[position];
@@ -44,12 +42,12 @@ public partial class InkRenderer
             RenderTreeFrameType.Markup => new RenderContext(++position, ctx.Node?.ApplyText(frame.MarkupContent)),
             RenderTreeFrameType.Component => RenderComponent(ref frame, ref ctx),
             RenderTreeFrameType.Element => UnsupportedFrameType(ref frame, ref ctx),
-            _ => NoopFrameType(ref frame, ref ctx)
+            _ => NoopFrameType(ref ctx)
         };
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RenderContext NoopFrameType(ref RenderTreeFrame frame, ref RenderContext ctx)
+    private RenderContext NoopFrameType(ref RenderContext ctx)
     {
         return ctx with { Position = ++ctx.Position };
     }
@@ -77,7 +75,7 @@ public partial class InkRenderer
             return RenderChildComponent(ref frame, ref ctx);
         }
 
-        node?.ApplyComponent(frame.Component);
+        node.ApplyComponent(frame.Component);
         ctx.Node?.AppendChild(node);
 
         var newCtx = new RenderContext(0, node);
@@ -90,11 +88,5 @@ public partial class InkRenderer
         return BuildSpectreRenderable(componentFrame.ComponentId, ref ctx);
     }
 
-    private record struct RenderContext(int Position, IInkNode? Node)
-    {
-        public static RenderContext Create(int position)
-        {
-            return new RenderContext(position, null);
-        }
-    }
+    private record struct RenderContext(int Position, IInkNode? Node);
 }
