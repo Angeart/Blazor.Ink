@@ -27,5 +27,6 @@
         <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.7"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.7"/>
         <PackageReference Include="Spectre.Console" Version="0.50.0"/>
+        <PackageReference Include="Yoga-CS" Version="1.0.0" />
     </ItemGroup>
 </Project>
