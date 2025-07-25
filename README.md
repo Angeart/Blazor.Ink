@@ -1,5 +1,5 @@
 <div align="center">
-<img src="./Blazor.Ink/icon.png"/>
+<img src="./src/Blazor.Ink/icon.png"/>
 </div>
 
 # Blazor.Ink
