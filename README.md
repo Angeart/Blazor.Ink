@@ -2,6 +2,9 @@
 <img src="./src/Blazor.Ink/icon.png"/>
 </div>
 
+> [!WARNING]
+> This project is in early development and may not be fully functional yet.
+
 # Blazor.Ink
 
 Blazor.Ink is a .NET library for building rich terminal UIs (TUI) using [Spectre.Console](https://spectreconsole.net/), inspired by [Ink](https://github.com/vadimdemedes/ink).  
