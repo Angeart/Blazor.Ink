@@ -16,7 +16,7 @@ public enum Align
     SpaceAround = YGAlign.YGAlignSpaceAround
 }
 
-internal static class InternalLayoutAlignExtensions
+internal static class InternalAlignItemsExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static YGAlign ToYogaAlign(this Align align)

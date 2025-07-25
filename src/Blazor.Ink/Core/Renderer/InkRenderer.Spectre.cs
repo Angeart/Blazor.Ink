@@ -1,9 +1,7 @@
 using System.Runtime.CompilerServices;
-using Blazor.Ink.Components;
-using Blazor.Ink.Layouts;
+using Blazor.Ink.Core.Renderer.Abstraction;
 using Microsoft.AspNetCore.Components.RenderTree;
 using Spectre.Console;
-using Text = Blazor.Ink.Components.Text;
 
 namespace Blazor.Ink.Core.Renderer;
 
@@ -37,9 +35,9 @@ public partial class InkRenderer
         ref var frame = ref frames.Array[position];
         return frame.FrameType switch
         {
-            RenderTreeFrameType.Text => new RenderContext(++position, ctx.Node?.ApplyText(frame.TextContent)),
+            RenderTreeFrameType.Text => new RenderContext(++position, ctx.RenderTree.AddText(frame.TextContent)),
             // NOTE: Ink does not support markup, directly add as a text content instead.
-            RenderTreeFrameType.Markup => new RenderContext(++position, ctx.Node?.ApplyText(frame.MarkupContent)),
+            RenderTreeFrameType.Markup => new RenderContext(++position, ctx.RenderTree.AddText(frame.MarkupContent)),
             RenderTreeFrameType.Component => RenderComponent(ref frame, ref ctx),
             RenderTreeFrameType.Element => UnsupportedFrameType(ref frame, ref ctx),
             _ => NoopFrameType(ref ctx)
@@ -62,24 +60,14 @@ public partial class InkRenderer
 
     private RenderContext RenderComponent(ref RenderTreeFrame frame, ref RenderContext ctx)
     {
-        IInkNode? node = frame.Component switch
+        if (frame.Component is not IRenderableComponent renderable)
         {
-            Box => new BoxNode(_ansiConsole),
-            Text => new TextNode(_ansiConsole),
-            _ => null
-        };
-
-        if (node is null)
-        {
-            // User-defined component, render it as a child component.
             return RenderChildComponent(ref frame, ref ctx);
         }
-
-        node.ApplyComponent(frame.Component);
-        ctx.Node?.AppendChild(node);
-
-        var newCtx = new RenderContext(0, node);
+        
+        var newCtx = new RenderContext(0, new RenderTree(renderable));
         RenderChildComponent(ref frame, ref newCtx);
+        ctx.RenderTree.AddChild(newCtx.RenderTree);
         return ctx with { Position = ++ctx.Position };
     }
 
@@ -88,5 +76,21 @@ public partial class InkRenderer
         return BuildSpectreRenderable(componentFrame.ComponentId, ref ctx);
     }
 
-    private record struct RenderContext(int Position, IInkNode? Node);
+    private struct RenderContext(int position,in RenderTree renderTree) : IDisposable
+    {
+        public int Position = position;
+        public RenderTree RenderTree = renderTree;
+        public static RenderContext Empty => new(0, new RenderTree(null));
+        
+        public void Deconstruct(out int position, out RenderTree renderTree)
+        {
+            position = Position;
+            renderTree = RenderTree;
+        }
+
+        public void Dispose()
+        {
+            RenderTree.Dispose();
+        }
+    }
 }

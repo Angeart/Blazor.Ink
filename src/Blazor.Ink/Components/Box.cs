@@ -1,28 +1,35 @@
 using Blazor.Ink.Core;
-using Blazor.Ink.Value;
+using Blazor.Ink.Core.Components.Abstraction;
+using Blazor.Ink.Core.Layout.Value;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Spectre.Console;
-using Value_Overflow = Blazor.Ink.Value.Overflow;
+using Align = Blazor.Ink.Core.Layout.Value.Align;
+using IRenderable = Spectre.Console.Rendering.IRenderable;
+using Justify = Blazor.Ink.Core.Layout.Value.Justify;
 
 namespace Blazor.Ink.Components;
 
 /// <summary>
 ///     Equivalent to Ink's Box. TUI element with border, padding, margin, etc.
 /// </summary>
-public class Box : ComponentBase, IInkComponent, IPadding, IMargin
+public class Box : InkComponentBase, IHasPadding, IHasMargin, IHasFlex, IHasPosition
 {
-    [Parameter] public Position Position { get; set; } = Position.Relative;
-    [Parameter] public int RowGap { get; set; } = 0;
-    [Parameter] public int Gap { get; set; } = 0;
+    [Parameter] public PositionType? Position { get; set; }
+    [Parameter] public PositionValue? Top { get; set; }
+    [Parameter] public PositionValue? Right { get; set; }
+    [Parameter] public PositionValue? Bottom { get; set; }
+    [Parameter] public PositionValue? Left { get; set; }
+    [Parameter] public int RowGap { get; set; }
+    [Parameter] public int Gap { get; set; }
 
     [Parameter] public Color? BorderColor { get; set; }
 
-    [Parameter] public bool BorderDimColor { get; set; } = false;
-    [Parameter] public bool BorderTopDimColor { get; set; } = false;
-    [Parameter] public bool BorderBottomDimColor { get; set; } = false;
-    [Parameter] public bool BorderLeftDimColor { get; set; } = false;
-    [Parameter] public bool BorderRightDimColor { get; set; } = false;
+    [Parameter] public bool BorderDimColor { get; set; }
+    [Parameter] public bool BorderTopDimColor { get; set; }
+    [Parameter] public bool BorderBottomDimColor { get; set; }
+    [Parameter] public bool BorderLeftDimColor { get; set; }
+    [Parameter] public bool BorderRightDimColor { get; set; }
     [Parameter] public BoxBorder? BorderStyle { get; set; }
 
     [Parameter] public int? Width { get; set; }
@@ -30,39 +37,67 @@ public class Box : ComponentBase, IInkComponent, IPadding, IMargin
     [Parameter] public int? MinWidth { get; set; }
     [Parameter] public int? MinHeight { get; set; }
 
-    [Parameter] public Display Display { get; set; } = Display.Flex;
-    [Parameter] public Value_Overflow Overflow { get; set; } = Value_Overflow.Visible;
-
-
-    [Parameter] public int FlexGrow { get; set; } = 0;
-    [Parameter] public int FlexShrink { get; set; } = 1;
-    [Parameter] public int FlexBasis { get; set; } = 0;
-    [Parameter] public FlexDirection FlexDirection { get; set; } = FlexDirection.Row;
-    [Parameter] public FlexWrap FlexWrap { get; set; } = FlexWrap.NoWrap;
-    [Parameter] public AlignItems AlignItems { get; set; } = AlignItems.Stretch;
-    [Parameter] public AlignSelf AlignSelf { get; set; } = AlignSelf.Auto;
-    [Parameter] public JustifyContent JustifyContent { get; set; } = JustifyContent.FlexStart;
+    public float? Flex { get; set; }
+    [Parameter] public float? FlexGrow { get; set; }
+    [Parameter] public float? FlexShrink { get; set; }
+    [Parameter] public LayoutValue? FlexBasis { get; set; }
+    [Parameter] public FlexDirection? FlexDirection { get; set; }
+    [Parameter] public FlexWrap? FlexWrap { get; set; }
+    [Parameter] public Align? Align { get; set; }
+    [Parameter] public Align? AlignSelf { get; set; }
+    [Parameter] public Justify? JustifyContent { get; set; }
 
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    [Parameter] public int? Margin { get; set; }
-    [Parameter] public int? MarginX { get; set; }
-    [Parameter] public int? MarginY { get; set; }
-    [Parameter] public int? MarginTop { get; set; }
-    [Parameter] public int? MarginBottom { get; set; }
-    [Parameter] public int? MarginLeft { get; set; }
-    [Parameter] public int? MarginRight { get; set; }
-    [Parameter] public int? Padding { get; set; }
-    [Parameter] public int? PaddingX { get; set; }
-    [Parameter] public int? PaddingY { get; set; }
-    [Parameter] public int? PaddingTop { get; set; }
-    [Parameter] public int? PaddingBottom { get; set; }
-    [Parameter] public int? PaddingLeft { get; set; }
-    [Parameter] public int? PaddingRight { get; set; }
+    [Parameter] public MarginValue? Margin { get; set; }
+    [Parameter] public MarginValue? MarginX { get; set; }
+    [Parameter] public MarginValue? MarginY { get; set; }
+    [Parameter] public MarginValue? MarginTop { get; set; }
+    [Parameter] public MarginValue? MarginBottom { get; set; }
+    [Parameter] public MarginValue? MarginLeft { get; set; }
+    [Parameter] public MarginValue? MarginRight { get; set; }
+    [Parameter] public PaddingValue? Padding { get; set; }
+    [Parameter] public PaddingValue? PaddingX { get; set; }
+    [Parameter] public PaddingValue? PaddingY { get; set; }
+    [Parameter] public PaddingValue? PaddingTop { get; set; }
+    [Parameter] public PaddingValue? PaddingBottom { get; set; }
+    [Parameter] public PaddingValue? PaddingLeft { get; set; }
+    [Parameter] public PaddingValue? PaddingRight { get; set; }
+
+    protected override void OnApplyLayout()
+    {
+        base.OnApplyLayout();
+        FixedBoxBorder.Default.ApplyInto(ref LayoutNode);
+    }
 
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
         builder.AddContent(0, ChildContent ?? string.Empty.ToMarkupRenderFragment());
+    }
+
+    protected override IRenderable OnBuildElement()
+    {
+        var width = LayoutNode.Computed.Width;
+        var height = LayoutNode.Computed.Height;
+        return new Panel(string.Empty)
+        {
+            Border = BorderStyle ?? BoxBorder.Square,
+            BorderStyle = new Style(BorderColor),
+            Width = width == 0 ? null : width,
+            Height = height == 0 ? null : height
+        };
+    }
+    
+    private struct FixedBoxBorder : IHasReadonlyBorder
+    {
+        public static FixedBoxBorder Default => new();
+        public int? Border => 1;
+        public int? BorderX => null;
+        public int? BorderY => null;
+        public int? BorderTop => null;
+        public int? BorderBottom => null;
+        public int? BorderLeft => null;
+        public int? BorderRight => null;
     }
 }

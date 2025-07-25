@@ -1,3 +1,6 @@
+using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Blazor.Ink.Core.Layout.Value;
 using Blazor.Ink.Core.Layout.Value.Config;
@@ -8,6 +11,7 @@ namespace Blazor.Ink.Core.Layout;
 public unsafe struct LayoutNode : IDisposable
 {
     private readonly YGNode* _yogaNode;
+
     /// <summary>
     /// When set to true, the node will dispose without unregistering child trees;.
     /// </summary>
@@ -29,94 +33,168 @@ public unsafe struct LayoutNode : IDisposable
 
     #endregion
 
+    #region Size
+
+    public LayoutValue Width
+    {
+        get => YG.NodeStyleGetWidth(_yogaNode);
+        set
+        {
+            switch (value.Unit)
+            {
+                case LayoutUnit.Point:
+                    YG.NodeStyleSetWidth(_yogaNode, value.ValueAsFloat);
+                    break;
+                case LayoutUnit.Percent:
+                    YG.NodeStyleSetWidthPercent(_yogaNode, value.ValueAsFloat);
+                    break;
+                case LayoutUnit.Auto:
+                    YG.NodeStyleSetWidthAuto(_yogaNode);
+                    break;
+                case LayoutUnit.MaxContent:
+                    YG.NodeStyleSetWidthMaxContent(_yogaNode);
+                    break;
+                case LayoutUnit.FitContent:
+                    YG.NodeStyleSetWidthFitContent(_yogaNode);
+                    break;
+                case LayoutUnit.Stretch:
+                    YG.NodeStyleSetWidthStretch(_yogaNode);
+                    break;
+                default:
+                    ThrowArgumentOutOfRangeException($"Invalid LayoutValue unit: {value.Unit}");
+                    break;
+            }
+        }
+    }
+
+    public LayoutValue Height
+    {
+        get => YG.NodeStyleGetHeight(_yogaNode);
+        set
+        {
+            switch (value.Unit)
+            {
+                case LayoutUnit.Point:
+                    YG.NodeStyleSetHeight(_yogaNode, value.ValueAsFloat);
+                    break;
+                case LayoutUnit.Percent:
+                    YG.NodeStyleSetHeightPercent(_yogaNode, value.ValueAsFloat);
+                    break;
+                case LayoutUnit.Auto:
+                    YG.NodeStyleSetHeightAuto(_yogaNode);
+                    break;
+                case LayoutUnit.MaxContent:
+                    YG.NodeStyleSetHeightMaxContent(_yogaNode);
+                    break;
+                case LayoutUnit.FitContent:
+                    YG.NodeStyleSetHeightFitContent(_yogaNode);
+                    break;
+                case LayoutUnit.Stretch:
+                    YG.NodeStyleSetHeightStretch(_yogaNode);
+                    break;
+                default:
+                    ThrowArgumentOutOfRangeException($"Invalid LayoutValue unit: {value.Unit}");
+                    break;
+            }
+        }
+    }
+
+    public float AspectRatio
+    {
+        get => YG.NodeStyleGetAspectRatio(_yogaNode);
+        set => YG.NodeStyleSetAspectRatio(_yogaNode, value);
+    }
+
+    #endregion
+
     #region Margin
 
-    public LayoutValue Margin
+    public MarginValue Margin
     {
         get => YG.NodeStyleGetMargin(_yogaNode, YGEdge.YGEdgeAll);
-        set => ApplyMarginValue(YGEdge.YGEdgeAll, value);
+        set => ApplyMargin(YGEdge.YGEdgeAll, value);
     }
 
-    public LayoutValue MarginX
+    public MarginValue MarginX
     {
         get => YG.NodeStyleGetMargin(_yogaNode, YGEdge.YGEdgeHorizontal);
-        set => ApplyMarginValue(YGEdge.YGEdgeHorizontal, value);
+        set => ApplyMargin(YGEdge.YGEdgeHorizontal, value);
     }
 
-    public LayoutValue MarginY
+    public MarginValue MarginY
     {
         get => YG.NodeStyleGetMargin(_yogaNode, YGEdge.YGEdgeVertical);
-        set => ApplyMarginValue(YGEdge.YGEdgeVertical, value);
+        set => ApplyMargin(YGEdge.YGEdgeVertical, value);
     }
 
-    public LayoutValue MarginTop
+    public MarginValue MarginTop
     {
         get => YG.NodeStyleGetMargin(_yogaNode, YGEdge.YGEdgeTop);
-        set => ApplyMarginValue(YGEdge.YGEdgeTop, value);
+        set => ApplyMargin(YGEdge.YGEdgeTop, value);
     }
 
-    public LayoutValue MarginRight
+    public MarginValue MarginRight
     {
         get => YG.NodeStyleGetMargin(_yogaNode, YGEdge.YGEdgeRight);
-        set => ApplyMarginValue(YGEdge.YGEdgeRight, value);
+        set => ApplyMargin(YGEdge.YGEdgeRight, value);
     }
 
-    public LayoutValue MarginBottom
+    public MarginValue MarginBottom
     {
         get => YG.NodeStyleGetMargin(_yogaNode, YGEdge.YGEdgeBottom);
-        set => ApplyMarginValue(YGEdge.YGEdgeBottom, value);
+        set => ApplyMargin(YGEdge.YGEdgeBottom, value);
     }
 
-    public LayoutValue MarginLeft
+    public MarginValue MarginLeft
     {
         get => YG.NodeStyleGetMargin(_yogaNode, YGEdge.YGEdgeLeft);
-        set => ApplyMarginValue(YGEdge.YGEdgeLeft, value);
+        set => ApplyMargin(YGEdge.YGEdgeLeft, value);
     }
 
     #endregion
 
     #region Padding
 
-    public LayoutValue Padding
+    public PaddingValue Padding
     {
         get => YG.NodeStyleGetPadding(_yogaNode, YGEdge.YGEdgeAll);
-        set => ApplyPaddingValue(YGEdge.YGEdgeAll, value);
+        set => ApplyPadding(YGEdge.YGEdgeAll, value);
     }
 
-    public LayoutValue PaddingX
+    public PaddingValue PaddingX
     {
         get => YG.NodeStyleGetPadding(_yogaNode, YGEdge.YGEdgeHorizontal);
-        set => ApplyPaddingValue(YGEdge.YGEdgeHorizontal, value);
+        set => ApplyPadding(YGEdge.YGEdgeHorizontal, value);
     }
 
-    public LayoutValue PaddingY
+    public PaddingValue PaddingY
     {
         get => YG.NodeStyleGetPadding(_yogaNode, YGEdge.YGEdgeVertical);
-        set => ApplyPaddingValue(YGEdge.YGEdgeVertical, value);
+        set => ApplyPadding(YGEdge.YGEdgeVertical, value);
     }
 
-    public LayoutValue PaddingTop
+    public PaddingValue PaddingTop
     {
         get => YG.NodeStyleGetPadding(_yogaNode, YGEdge.YGEdgeTop);
-        set => ApplyPaddingValue(YGEdge.YGEdgeTop, value);
+        set => ApplyPadding(YGEdge.YGEdgeTop, value);
     }
 
-    public LayoutValue PaddingRight
+    public PaddingValue PaddingRight
     {
         get => YG.NodeStyleGetPadding(_yogaNode, YGEdge.YGEdgeRight);
-        set => ApplyPaddingValue(YGEdge.YGEdgeRight, value);
+        set => ApplyPadding(YGEdge.YGEdgeRight, value);
     }
 
-    public LayoutValue PaddingBottom
+    public PaddingValue PaddingBottom
     {
         get => YG.NodeStyleGetPadding(_yogaNode, YGEdge.YGEdgeBottom);
-        set => ApplyPaddingValue(YGEdge.YGEdgeBottom, value);
+        set => ApplyPadding(YGEdge.YGEdgeBottom, value);
     }
 
-    public LayoutValue PaddingLeft
+    public PaddingValue PaddingLeft
     {
         get => YG.NodeStyleGetPadding(_yogaNode, YGEdge.YGEdgeLeft);
-        set => ApplyPaddingValue(YGEdge.YGEdgeLeft, value);
+        set => ApplyPadding(YGEdge.YGEdgeLeft, value);
     }
 
     #endregion
@@ -169,49 +247,31 @@ public unsafe struct LayoutNode : IDisposable
 
     #region Position
 
-    public LayoutValue Position
-    {
-        get => YG.NodeStyleGetPosition(_yogaNode, YGEdge.YGEdgeAll);
-        set => ApplyPosition(YGEdge.YGEdgeAll, value);
-    }
-
-    public LayoutValue PositionX
-    {
-        get => YG.NodeStyleGetPosition(_yogaNode, YGEdge.YGEdgeHorizontal);
-        set => ApplyPosition(YGEdge.YGEdgeHorizontal, value);
-    }
-
-    public LayoutValue PositionY
-    {
-        get => YG.NodeStyleGetPosition(_yogaNode, YGEdge.YGEdgeVertical);
-        set => ApplyPosition(YGEdge.YGEdgeVertical, value);
-    }
-
-    public LayoutValue PositionTop
+    public PositionValue Top
     {
         get => YG.NodeStyleGetPosition(_yogaNode, YGEdge.YGEdgeTop);
         set => ApplyPosition(YGEdge.YGEdgeTop, value);
     }
 
-    public LayoutValue PositionRight
+    public PositionValue Right
     {
         get => YG.NodeStyleGetPosition(_yogaNode, YGEdge.YGEdgeRight);
         set => ApplyPosition(YGEdge.YGEdgeRight, value);
     }
 
-    public LayoutValue PositionBottom
+    public PositionValue Bottom
     {
         get => YG.NodeStyleGetPosition(_yogaNode, YGEdge.YGEdgeBottom);
         set => ApplyPosition(YGEdge.YGEdgeBottom, value);
     }
 
-    public LayoutValue PositionLeft
+    public PositionValue Left
     {
         get => YG.NodeStyleGetPosition(_yogaNode, YGEdge.YGEdgeLeft);
         set => ApplyPosition(YGEdge.YGEdgeLeft, value);
     }
 
-    public LayoutPositionType PositionType
+    public PositionType Position
     {
         get => YG.NodeStyleGetPositionType(_yogaNode).ToLayoutPositionType();
         set => YG.NodeStyleSetPositionType(_yogaNode, value.ToYogaPositionType());
@@ -245,7 +305,7 @@ public unsafe struct LayoutNode : IDisposable
         set => YG.NodeStyleSetAlignContent(_yogaNode, value.ToYogaAlign());
     }
 
-    public Align AlignItems
+    public Align Align
     {
         get => YG.NodeStyleGetAlignItems(_yogaNode).ToLayoutAlign();
         set => YG.NodeStyleSetAlignItems(_yogaNode, value.ToYogaAlign());
@@ -292,10 +352,10 @@ public unsafe struct LayoutNode : IDisposable
             switch (value.Unit)
             {
                 case LayoutUnit.Point:
-                    YG.NodeStyleSetFlexBasis(_yogaNode, value.Value);
+                    YG.NodeStyleSetFlexBasis(_yogaNode, value.ValueAsFloat);
                     break;
                 case LayoutUnit.Percent:
-                    YG.NodeStyleSetFlexBasisPercent(_yogaNode, value.Value);
+                    YG.NodeStyleSetFlexBasisPercent(_yogaNode, value.ValueAsFloat);
                     break;
                 case LayoutUnit.Auto:
                     YG.NodeStyleSetFlexBasisAuto(_yogaNode);
@@ -315,7 +375,7 @@ public unsafe struct LayoutNode : IDisposable
         }
     }
 
-    public LayoutWrap FlexWrap
+    public FlexWrap FlexWrap
     {
         get => YG.NodeStyleGetFlexWrap(_yogaNode).ToLayoutWrap();
         set => YG.NodeStyleSetFlexWrap(_yogaNode, value.ToYogaWrap());
@@ -329,49 +389,49 @@ public unsafe struct LayoutNode : IDisposable
 
     public readonly struct ComputedProperties(YGNode* yogaNode)
     {
-        public float Left => YG.NodeLayoutGetLeft(yogaNode);
+        public int Left => (int)YG.NodeLayoutGetLeft(yogaNode);
 
-        public float Top => YG.NodeLayoutGetTop(yogaNode);
+        public int Top => (int)YG.NodeLayoutGetTop(yogaNode);
 
-        public float Right => YG.NodeLayoutGetRight(yogaNode);
+        public int Right => (int)YG.NodeLayoutGetRight(yogaNode);
 
-        public float Bottom => YG.NodeLayoutGetBottom(yogaNode);
+        public int Bottom => (int)YG.NodeLayoutGetBottom(yogaNode);
 
-        public float Width => YG.NodeLayoutGetWidth(yogaNode);
+        public int Width => (int)YG.NodeLayoutGetWidth(yogaNode);
 
-        public float Height => YG.NodeLayoutGetHeight(yogaNode);
+        public int Height => (int)YG.NodeLayoutGetHeight(yogaNode);
 
         public Direction Direction => YG.NodeLayoutGetDirection(yogaNode).ToLayoutDirection();
 
         public bool HadOverflow => YG.NodeLayoutGetHadOverflow(yogaNode) != 0;
 
-        public (float Top, float Left, float Bottom, float Right) GetLayoutMargin()
+        public (int Top, int Left, int Bottom, int Right) GetLayoutMargin()
         {
             return (
-                YG.NodeLayoutGetMargin(yogaNode, YGEdge.YGEdgeTop),
-                YG.NodeLayoutGetMargin(yogaNode, YGEdge.YGEdgeLeft),
-                YG.NodeLayoutGetMargin(yogaNode, YGEdge.YGEdgeBottom),
-                YG.NodeLayoutGetMargin(yogaNode, YGEdge.YGEdgeRight)
+                (int)YG.NodeLayoutGetMargin(yogaNode, YGEdge.YGEdgeTop),
+                (int)YG.NodeLayoutGetMargin(yogaNode, YGEdge.YGEdgeLeft),
+                (int)YG.NodeLayoutGetMargin(yogaNode, YGEdge.YGEdgeBottom),
+                (int)YG.NodeLayoutGetMargin(yogaNode, YGEdge.YGEdgeRight)
             );
         }
 
-        public (float Top, float Left, float Bottom, float Right) GetLayoutBorder()
+        public (int Top, int Left, int Bottom, int Right) GetLayoutBorder()
         {
             return (
-                YG.NodeLayoutGetBorder(yogaNode, YGEdge.YGEdgeTop),
-                YG.NodeLayoutGetBorder(yogaNode, YGEdge.YGEdgeLeft),
-                YG.NodeLayoutGetBorder(yogaNode, YGEdge.YGEdgeBottom),
-                YG.NodeLayoutGetBorder(yogaNode, YGEdge.YGEdgeRight)
+                (int)YG.NodeLayoutGetBorder(yogaNode, YGEdge.YGEdgeTop),
+                (int)YG.NodeLayoutGetBorder(yogaNode, YGEdge.YGEdgeLeft),
+                (int)YG.NodeLayoutGetBorder(yogaNode, YGEdge.YGEdgeBottom),
+                (int)YG.NodeLayoutGetBorder(yogaNode, YGEdge.YGEdgeRight)
             );
         }
 
-        public (float Top, float Left, float Bottom, float Right) GetLayoutPadding()
+        public (int Top, int Left, int Bottom, int Right) GetLayoutPadding()
         {
             return (
-                YG.NodeLayoutGetPadding(yogaNode, YGEdge.YGEdgeTop),
-                YG.NodeLayoutGetPadding(yogaNode, YGEdge.YGEdgeLeft),
-                YG.NodeLayoutGetPadding(yogaNode, YGEdge.YGEdgeBottom),
-                YG.NodeLayoutGetPadding(yogaNode, YGEdge.YGEdgeRight)
+                (int)YG.NodeLayoutGetPadding(yogaNode, YGEdge.YGEdgeTop),
+                (int)YG.NodeLayoutGetPadding(yogaNode, YGEdge.YGEdgeLeft),
+                (int)YG.NodeLayoutGetPadding(yogaNode, YGEdge.YGEdgeBottom),
+                (int)YG.NodeLayoutGetPadding(yogaNode, YGEdge.YGEdgeRight)
             );
         }
     }
@@ -394,32 +454,32 @@ public unsafe struct LayoutNode : IDisposable
     {
         YG.NodeCopyStyle(_yogaNode, src._yogaNode);
     }
-    
+
     public void CopyStyleTo(LayoutNode dest)
     {
         YG.NodeCopyStyle(dest._yogaNode, _yogaNode);
     }
-    
+
     public void MarkDirty()
     {
         YG.NodeMarkDirty(_yogaNode);
     }
-    
-    public bool IsDirty =>  YG.NodeIsDirty(_yogaNode) != 0;
+
+    public bool IsDirty => YG.NodeIsDirty(_yogaNode) != 0;
 
     #endregion
 
     #region Children Management
 
-    public void InsertChild(LayoutNode child, nuint index)
+    public void InsertChild(LayoutNode child, int index)
     {
-        YG.NodeInsertChild(_yogaNode, child._yogaNode, index);
+        YG.NodeInsertChild(_yogaNode, child._yogaNode, (nuint)index);
         child.UpdateInheritance();
     }
 
-    public void SwapChild(LayoutNode child, nuint index)
+    public void SwapChild(LayoutNode child, int index)
     {
-        YG.NodeSwapChild(_yogaNode, child._yogaNode, index);
+        YG.NodeSwapChild(_yogaNode, child._yogaNode, (nuint)index);
         child.UpdateInheritance();
     }
 
@@ -431,16 +491,20 @@ public unsafe struct LayoutNode : IDisposable
 
     public void RemoveAllChildren()
     {
-        var children = new LayoutNode[GetChildCount()];
+        var childCount = GetChildCount();
+        var children = ArrayPool<LayoutNode>.Shared.Rent(childCount);
         for (var i = 0; i < children.Length; i++)
         {
             children[i] = GetChild(i)!.Value;
         }
+
         YG.NodeRemoveAllChildren(_yogaNode);
-        foreach (var child in children)
+        foreach (var child in children.AsSpan(0, childCount))
         {
             child.UpdateInheritance();
         }
+
+        ArrayPool<LayoutNode>.Shared.Return(children);
     }
 
     public void SetChildren(LayoutNode[] children)
@@ -452,6 +516,7 @@ public unsafe struct LayoutNode : IDisposable
         {
             YG.NodeSetChildren(_yogaNode, ptr, (nuint)children.Length);
         }
+
         foreach (var child in children)
         {
             child.UpdateInheritance();
@@ -471,7 +536,7 @@ public unsafe struct LayoutNode : IDisposable
         {
             throw new InvalidOperationException("Child count exceeds maximum integer value.");
         }
-        
+
         return (int)count;
     }
 
@@ -529,17 +594,18 @@ public unsafe struct LayoutNode : IDisposable
             get => YG.ConfigGetErrata(YogaConfig).ToLayoutConfigErrata();
             set => YG.ConfigSetErrata(YogaConfig, value.ToYogaErrata());
         }
-        
+
         // NOTE: Currently SetLogger is not implemented because it's not needed.
         // NOTE: Currently SetExperimentalFeatureEnabled is not implemented because it's not needed.
 
         internal TContext? GetContext<TContext>()
+        where TContext : struct
         {
             var context = YG.ConfigGetContext(YogaConfig);
             var ptr = (IntPtr)context;
             if (ptr == IntPtr.Zero)
             {
-                return default;
+                return null;
             }
 
             var handle = GCHandle.FromIntPtr(ptr);
@@ -550,6 +616,7 @@ public unsafe struct LayoutNode : IDisposable
         }
 
         internal void SetContext<TContext>(TContext? context)
+        where TContext : struct
         {
             if (context == null)
             {
@@ -578,7 +645,7 @@ public unsafe struct LayoutNode : IDisposable
         {
             UseWebDefaults = useWebDefaults;
         }
-        
+
         internal Configuration(YGConfig* yogaConfig)
         {
             if (yogaConfig == null)
@@ -598,7 +665,7 @@ public unsafe struct LayoutNode : IDisposable
 
             var config = new Configuration(parent.YogaConfig);
             config.Inherited = true;
-            
+
             return config;
         }
 
@@ -618,11 +685,18 @@ public unsafe struct LayoutNode : IDisposable
 
     public LayoutNode(bool useFastDispose = false)
     {
-        Computed = new ComputedProperties(_yogaNode);
         _yogaNode = YG.NodeNew();
+        // NOTE: Should create after _yogaNode is initialized.
+        Computed = new ComputedProperties(_yogaNode);
         _config = InitConfig();
-        _config.SetContext(this);
+        _config.SetContext<LayoutNode>(this);
         UseFastDispose = useFastDispose;
+        ApplyConfig();
+    }
+
+    public LayoutNode() : this(false)
+    {
+        // Default constructor with fast dispose disabled.
     }
 
     public void Dispose()
@@ -635,22 +709,25 @@ public unsafe struct LayoutNode : IDisposable
         {
             YG.NodeFree(_yogaNode);
         }
+
         _config.Dispose();
     }
 
     #region Internals
-    
+
     private static LayoutNode? GetLayoutNodeFromContext(YGNode* node)
     {
         if (node == null)
         {
             return null;
         }
+
         var ygConfig = YG.NodeGetConfig(node);
         if (ygConfig == null)
         {
             return null;
         }
+
         var config = new Configuration(ygConfig);
         return config.GetContext<LayoutNode>();
     }
@@ -696,9 +773,9 @@ public unsafe struct LayoutNode : IDisposable
         YG.NodeSetConfig(_yogaNode, Config.YogaConfig);
     }
 
-    private void ApplyMarginValue(YGEdge edge, LayoutValue value)
+    private void ApplyMargin(YGEdge edge, MarginValue value)
     {
-        ApplyLayoutValue(
+        ApplyEdgeValue(
             "Margin",
             _yogaNode,
             YG.NodeStyleSetMargin,
@@ -709,9 +786,9 @@ public unsafe struct LayoutNode : IDisposable
             edge, value);
     }
 
-    private void ApplyPaddingValue(YGEdge edge, LayoutValue value)
+    private void ApplyPadding(YGEdge edge, PaddingValue value)
     {
-        ApplyLayoutValue(
+        ApplyEdgeValue(
             "Padding",
             _yogaNode,
             YG.NodeStyleSetPadding,
@@ -722,9 +799,9 @@ public unsafe struct LayoutNode : IDisposable
             edge, value);
     }
 
-    private void ApplyPosition(YGEdge edge, LayoutValue value)
+    private void ApplyPosition(YGEdge edge, PositionValue value)
     {
-        ApplyLayoutValue(
+        ApplyEdgeValue(
             "Position",
             _yogaNode,
             YG.NodeStyleSetPosition,
@@ -739,7 +816,8 @@ public unsafe struct LayoutNode : IDisposable
 
     private delegate void EdgeApplier(YGNode* node, YGEdge edge);
 
-    private static void ApplyLayoutValue(
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void ApplyEdgeValue(
         string name,
         YGNode* node,
         EdgeValueApplier? point,
@@ -753,18 +831,18 @@ public unsafe struct LayoutNode : IDisposable
         switch (value.Unit)
         {
             case LayoutUnit.Point:
-                point?.Invoke(node, edge, value.Value);
+                point?.Invoke(node, edge, value.ValueAsFloat);
                 if (point is null)
                 {
-                    throw new ArgumentNullException(nameof(point), $"{name} has no setter for Point unit.");
+                    ThrowArgumentNullException($"{name} has no setter for Point unit.", nameof(point));
                 }
 
                 break;
             case LayoutUnit.Percent:
-                percent?.Invoke(node, edge, value.Value);
+                percent?.Invoke(node, edge, value.ValueAsFloat);
                 if (percent is null)
                 {
-                    throw new ArgumentNullException(nameof(percent), $"{name} has no setter for Percent unit.");
+                    ThrowArgumentNullException($"{name} has no setter for Percent unit.", nameof(percent));
                 }
 
                 break;
@@ -772,7 +850,7 @@ public unsafe struct LayoutNode : IDisposable
                 auto?.Invoke(node, edge);
                 if (auto is null)
                 {
-                    throw new ArgumentNullException(nameof(auto), $"{name} has no setter for Auto unit.");
+                    ThrowArgumentNullException($"{name} has no setter for Auto unit.", nameof(auto));
                 }
 
                 break;
@@ -780,7 +858,7 @@ public unsafe struct LayoutNode : IDisposable
                 maxContent?.Invoke(node, edge);
                 if (maxContent is null)
                 {
-                    throw new ArgumentNullException(nameof(maxContent), $"{name} has no setter for MaxContent unit.");
+                    ThrowArgumentNullException($"{name} has no setter for MaxContent unit.", nameof(maxContent));
                 }
 
                 break;
@@ -788,13 +866,32 @@ public unsafe struct LayoutNode : IDisposable
                 fitContent?.Invoke(node, edge);
                 if (fitContent is null)
                 {
-                    throw new ArgumentNullException(nameof(fitContent), $"{name} has no setter for FitContent unit.");
+                    ThrowArgumentNullException($"{name} has no setter for FitContent unit.", nameof(fitContent));
                 }
 
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(value), "Invalid LayoutValue unit.");
+                ThrowArgumentOutOfRangeException(
+                    $"Invalid LayoutValue unit: {value.Unit}.",
+                    nameof(value));
+                break;
         }
+    }
+
+    #endregion
+
+    #region Exceptions
+
+    [DoesNotReturn]
+    private static void ThrowArgumentNullException(string message, [CallerMemberName] string paramName = "")
+    {
+        throw new ArgumentNullException(paramName, message);
+    }
+
+    [DoesNotReturn]
+    private static void ThrowArgumentOutOfRangeException(string message, [CallerMemberName] string paramName = "")
+    {
+        throw new ArgumentOutOfRangeException(paramName, message);
     }
 
     #endregion

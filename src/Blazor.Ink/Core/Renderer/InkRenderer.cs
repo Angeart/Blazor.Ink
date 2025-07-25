@@ -1,9 +1,8 @@
-using Blazor.Ink.Layouts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
-using Size = Blazor.Ink.Layouts.Size;
+using Size = Blazor.Ink.Core.Layout.Value.Size;
 
 namespace Blazor.Ink.Core.Renderer;
 
@@ -40,20 +39,10 @@ public partial class InkRenderer : Microsoft.AspNetCore.Components.RenderTree.Re
     {
         _logger.LogDebug("ReferenceFrames.Count: {Count}", renderBatch.ReferenceFrames.Count);
         // Render the Root node first.
-        var ctx = new RenderContext(0, new RootNode(_ansiConsole));
+        var ctx = RenderContext.Empty;
         var rootCtx = BuildSpectreRenderable(0, ref ctx);
-        if (rootCtx.Node is not null)
-        {
-            // _ansiConsole.Cursor.Hide();
-            // _ansiConsole.Cursor.MoveUp(Math.Max(0, _currentCursorY - 1));
-            rootCtx.Node.CalculateLayout();
-            var renderTree = rootCtx.Node.BuildRenderTree();
-            var size = renderTree.Render();
-            _lastRenderedMaxSize = Size.Max(_lastRenderedMaxSize, size);
-            // _currentCursorY = size.Height;
-            rootCtx.Node.Dispose();
-            // _ansiConsole.Cursor.MoveDown(_currentCursorY);
-        }
+        _lastRenderedMaxSize = rootCtx.RenderTree.Execute(_ansiConsole);
+        rootCtx.Dispose();
 
         return Task.CompletedTask;
     }

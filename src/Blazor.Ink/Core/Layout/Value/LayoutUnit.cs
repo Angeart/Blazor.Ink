@@ -1,7 +1,7 @@
 using Blazor.Ink.Core.Helper;
 using Yoga;
 
-namespace Blazor.Ink.Core.Layout;
+namespace Blazor.Ink.Core.Layout.Value;
 
 public enum LayoutUnit
 {
