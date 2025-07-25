@@ -65,6 +65,7 @@ public partial class InkRenderer
             return RenderChildComponent(ref frame, ref ctx);
         }
         
+        renderable.LayoutNode.RemoveAllChildren();
         var newCtx = new RenderContext(0, new RenderTree(renderable));
         RenderChildComponent(ref frame, ref newCtx);
         ctx.RenderTree.AddChild(newCtx.RenderTree);

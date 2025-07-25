@@ -493,7 +493,7 @@ public unsafe struct LayoutNode : IDisposable
     {
         var childCount = GetChildCount();
         var children = ArrayPool<LayoutNode>.Shared.Rent(childCount);
-        for (var i = 0; i < children.Length; i++)
+        for (var i = 0; i < childCount; i++)
         {
             children[i] = GetChild(i)!.Value;
         }
@@ -610,7 +610,6 @@ public unsafe struct LayoutNode : IDisposable
 
             var handle = GCHandle.FromIntPtr(ptr);
             var ctx = (TContext?)handle.Target;
-            handle.Free();
 
             return ctx;
         }
@@ -625,7 +624,7 @@ public unsafe struct LayoutNode : IDisposable
             }
 
             _pinHandle?.Free();
-            _pinHandle = GCHandle.Alloc(context, GCHandleType.Normal);
+            _pinHandle = GCHandle.Alloc(context.Value, GCHandleType.Pinned);
             var ptr = GCHandle.ToIntPtr(_pinHandle.Value);
             YG.ConfigSetContext(YogaConfig, (void*)ptr);
         }
@@ -765,7 +764,9 @@ public unsafe struct LayoutNode : IDisposable
             return Configuration.Empty;
         }
 
-        return new Configuration();
+        var config = new Configuration();
+        config.SetContext<LayoutNode>(this);
+        return config;
     }
 
     private void ApplyConfig()
